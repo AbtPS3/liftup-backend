@@ -1,0 +1,21 @@
+version: '3'
+services:
+  # Backend Service - 3010
+  liftup-uploader-backend:
+    container_name: liftup-uploader-backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3010:3010"
+    command: "npm run start:dev"
+    volumes:
+      - /var/ucs_uploads:/app/public/uploads
+    stdin_open: true
+    tty: true
+
+volumes:
+  ucs_uploads:
