@@ -209,10 +209,19 @@ class UploadController {
       };
 
       // Make an authentication request to an external service
+      const opensrpIp = process.env.OPENSRP_IP;
+      const opensrpPort = process.env.OPENSRP_PORT;
       const authResponse = await axios.get(
-        "http://170.187.199.69:8082/opensrp/security/authenticate",
+        "http://" + opensrpIp + ":" + opensrpPort + "/opensrp/security/authenticate",
         axiosConfig
       );
+
+      // Extract username and password from the request body
+      const userType = await authResponse.data.team.locations[0].tags[0].name;
+      // Check if both username and password are provided
+      if (userType !== "Facility") {
+        throw new CustomError("User is not allowed to add files!", 400);
+      }
 
       // Generate a JWT token using user information from the authentication response
       const token = jwt.sign(
@@ -222,7 +231,8 @@ class UploadController {
             team: authResponse.data.team.team.teamName,
             teamId: authResponse.data.team.team.uuid,
             providerId: authResponse.data.user.username,
-            locationId: authResponse.data.team.team.location.uuid,
+            locationId: authResponse.data.team.locations[0].uuid,
+            facility: authResponse.data.team.locations[0].display,
           },
         },
         process.env.JWT_SECRET
@@ -237,7 +247,7 @@ class UploadController {
 
       return response.api(req, res, 200, payload);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       next(error);
     }
   }
