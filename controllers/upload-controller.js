@@ -247,7 +247,7 @@ class UploadController {
 
       return response.api(req, res, 200, payload);
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       next(error);
     }
   }
