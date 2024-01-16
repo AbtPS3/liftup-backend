@@ -14,6 +14,8 @@ services:
     command: "npm run start:dev"
     volumes:
       - /var/ucs_uploads:/app/public/uploads
+      - /var/index_uploads:/app/public/index_uploads
+      - /var/contacts_uploads:/app/public/contacts_uploads
     stdin_open: true
     tty: true
 

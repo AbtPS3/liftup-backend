@@ -107,6 +107,14 @@ class UploadController {
         throw new Error("No file provided!");
       }
 
+      // Capture the original file name to determine if it's for clients or contacts
+      const originalFileName = req.file.originalname;
+      // const match = originalFileName.match(/^(\d{4}-\d{2}-\d{2})_[^_]+_(clients|contacts)_/);
+      // const uploadType = match ? match[2] : null;
+      const fileNameParts = originalFileName.split("_");
+      const uploadType =
+        fileNameParts[1] === "clients" || fileNameParts[1] === "contacts" ? fileNameParts[1] : null;
+
       const fileBuffer = req.file.buffer;
 
       // Convert the buffer to a readable stream using streamifier
@@ -145,10 +153,21 @@ class UploadController {
       csvStream.on("end", async () => {
         // Check if there is data available
         if (results.length > 0) {
-          // Write the processed data to a new CSV file without headers
-          const currentDate = new Date().toISOString().slice(0, 19);
-          const fileName = `${currentDate}_processed.csv`;
-          const filePath = join(__dirname, "../public/uploads", fileName);
+          // Determine the upload directory based on the uploadType
+          let uploadDirectory;
+
+          if (uploadType === "clients") {
+            uploadDirectory = "index_uploads";
+          } else if (uploadType === "contacts") {
+            uploadDirectory = "contacts_uploads";
+          } else {
+            console.error("UploadType:", uploadType);
+            return response.api(req, res, 201, "Upload type is null!" + req.file.originalname);
+            // throw new CustomError(`Invalid uploadType: ${uploadType}`, 400);
+          }
+
+          // Set the filePath based on the determined upload directory
+          const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
 
           // Create a CSV writer instance
           const csvWriter = createObjectCsvWriter({
