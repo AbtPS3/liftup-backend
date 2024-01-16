@@ -21,3 +21,5 @@ services:
 
 volumes:
   ucs_uploads:
+  index_uploads:
+  contacts_uploads:
