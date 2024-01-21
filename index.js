@@ -106,5 +106,5 @@ class AppServer {
 const appServer = new AppServer();
 appServer.start();
 
-// Export the AppServer class
+// Export the AppServer class now
 export default AppServer;
