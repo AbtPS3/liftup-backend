@@ -11,3 +11,4 @@ logs
 !.vscode/extensions.json
 .idea
 .env
+update.sh
