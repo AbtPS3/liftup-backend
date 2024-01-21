@@ -1,8 +1,8 @@
 /**
- * @file UploadController.js
- * @module controllers/UploadController
- * @description Controller class for handling CSV file upload logic and authentication.
- * @version 1.0.0
+ * @file upload-controller.js
+ * @module controllers/upload-controller
+ * @description Controller class for handling CSV file upload logic.
+ * @version 1.0.1
  * @author Kizito S.M.
  */
 
@@ -11,12 +11,11 @@ import { dirname, join } from "path";
 import csvParser from "csv-parser";
 import pkg from "csv-writer";
 import streamifier from "streamifier";
-import axios from "axios";
-import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 import CustomError from "../helpers/custom-error.js";
-import response from "../helpers/api-helper.js";
-import AuthenticateJwt from "../middleware/authenticate-jwt.js";
+import response from "../helpers/response-handler.js";
 
 // Get the current module's URL
 const currentModuleURL = new URL(import.meta.url);
@@ -26,7 +25,7 @@ const __dirname = dirname(fileURLToPath(currentModuleURL));
 const { createObjectCsvWriter } = pkg;
 
 /**
- * Controller class for handling CSV file upload logic and authentication.
+ * Controller class for handling CSV file upload logic.
  * @class
  */
 class UploadController {
@@ -37,8 +36,6 @@ class UploadController {
   constructor() {
     // Set the current directory name
     this.__dirname = dirname(fileURLToPath(currentModuleURL));
-    // Initialize AuthenticateJwt instance for authentication
-    this.auth = new AuthenticateJwt();
   }
 
   /**
@@ -68,32 +65,6 @@ class UploadController {
   }
 
   /**
-   * Handles requests to the protected route.
-   * @param {Object} req - Express request object.
-   * @param {Object} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   * @returns {Object} - JSON response containing the message and authentication status.
-   */
-  async protected(req, res, next) {
-    try {
-      // Check if the request is authenticated
-      const authenticated = req.decoded ? true : false;
-
-      // Response payload
-      const payload = {
-        token: null,
-        authenticated: authenticated,
-        message: "Protected route has been reached!",
-      };
-
-      return response.api(req, res, 200, payload);
-    } catch (error) {
-      console.error(error.message);
-      next(error);
-    }
-  }
-
-  /**
    * Handles file uploads and processes the CSV file.
    * @param {Object} req - Express request object.
    * @param {Object} res - Express response object.
@@ -109,8 +80,6 @@ class UploadController {
 
       // Capture the original file name to determine if it's for clients or contacts
       const originalFileName = req.file.originalname;
-      // const match = originalFileName.match(/^(\d{4}-\d{2}-\d{2})_[^_]+_(clients|contacts)_/);
-      // const uploadType = match ? match[2] : null;
       const fileNameParts = originalFileName.split("_");
       const uploadType =
         fileNameParts[1] === "clients" || fileNameParts[1] === "contacts" ? fileNameParts[1] : null;
@@ -163,7 +132,6 @@ class UploadController {
           } else {
             console.error("UploadType:", uploadType);
             return response.api(req, res, 201, "Upload type is null!" + req.file.originalname);
-            // throw new CustomError(`Invalid uploadType: ${uploadType}`, 400);
           }
 
           // Set the filePath based on the determined upload directory
@@ -196,77 +164,6 @@ class UploadController {
       fileStream.pipe(csvStream);
     } catch (error) {
       console.error(error.message);
-      next(error);
-    }
-  }
-
-  /**
-   * Handles user login requests and generates a JWT token.
-   * @param {Object} req - Express request object.
-   * @param {Object} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   * @returns {Object} - JSON response containing the token and authentication status.
-   */
-  async login(req, res, next) {
-    try {
-      // Extract username and password from the request body
-      const { username, password } = req.body;
-      // Check if both username and password are provided
-      if (!username || !password) {
-        throw new CustomError("Username or Password is missing!", 400);
-      }
-
-      // Create a base64-encoded Authorization header value
-      const authHeaderValue = Buffer.from(`${username}:${password}`).toString("base64");
-
-      // Configure headers for the authentication request to external service
-      const axiosConfig = {
-        headers: {
-          Authorization: `Basic ${authHeaderValue}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      // Make an authentication request to an external service
-      const opensrpIp = process.env.OPENSRP_IP;
-      const opensrpPort = process.env.OPENSRP_PORT;
-      const authResponse = await axios.get(
-        "http://" + opensrpIp + ":" + opensrpPort + "/opensrp/security/authenticate",
-        axiosConfig
-      );
-
-      // Extract username and password from the request body
-      const userType = await authResponse.data.team.locations[0].tags[0].name;
-      // Check if both username and password are provided
-      if (userType !== "Facility") {
-        throw new CustomError("User is not allowed to add files!", 400);
-      }
-
-      // Generate a JWT token using user information from the authentication response
-      const token = jwt.sign(
-        {
-          exp: Date.now(),
-          data: {
-            team: authResponse.data.team.team.teamName,
-            teamId: authResponse.data.team.team.uuid,
-            providerId: authResponse.data.user.username,
-            locationId: authResponse.data.team.locations[0].uuid,
-            facility: authResponse.data.team.locations[0].display,
-          },
-        },
-        process.env.JWT_SECRET
-      );
-
-      // Response payload
-      const payload = {
-        token: token,
-        authenticated: true,
-        message: "Login successful",
-      };
-
-      return response.api(req, res, 200, payload);
-    } catch (error) {
-      console.error(error);
       next(error);
     }
   }

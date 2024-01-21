@@ -2,13 +2,13 @@
  * @file upload-router.js
  * @module upload-router
  * @description Express router for handling file uploads and related routes.
- * @version 1.0.0
+ * @version 1.0.1
  * @author Kizito S.M.
  */
 
 import { Router } from "express";
 import multer from "multer";
-import AuthenticateJwt from "../middleware/authenticate-jwt.js";
+import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
 import UploadController from "../controllers/upload-controller.js";
 
 /**
@@ -23,7 +23,7 @@ const authMiddleware = new AuthenticateJwt();
 // Multer configuration for handling file uploads
 const storage = multer.memoryStorage();
 
-const fileFilter = (req, file, cb) => {
+const fileFilter = (_req, file, cb) => {
   const allowedMimes = ["text/csv", "application/vnd.ms-excel"]; // Add more MIME types if needed
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
@@ -59,31 +59,6 @@ router.get("/", UploadController.all);
  * @returns {Promise<void>}
  */
 router.post("/", upload.single("file"), authMiddleware.decode, UploadController.create);
-
-/**
- * Route for handling login requests.
- * @name POST /login
- * @function
- * @async
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * @returns {Promise<void>}
- */
-router.post("/login", UploadController.login);
-
-/**
- * Route for handling protected path requests.
- * @name GET /protected
- * @function
- * @async
- * @middleware {Function} authMiddleware.decode - Middleware for decoding and verifying JWT tokens.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * @returns {Promise<void>}
- */
-router.get("/protected", authMiddleware.decode, UploadController.protected);
 
 // Export the router
 export default router;

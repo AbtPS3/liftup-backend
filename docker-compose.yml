@@ -1,8 +1,8 @@
 version: '3'
 services:
-  # Backend Service - 3010
-  liftup-uploader-backend:
-    container_name: liftup-uploader-backend
+  # Lift Up Backend
+  liftup-backend:
+    container_name: liftup-backend
     build:
       context: ./
       dockerfile: Dockerfile
@@ -13,13 +13,13 @@ services:
       - "3010:3010"
     command: "npm run start:dev"
     volumes:
-      - /var/ucs_uploads:/app/public/uploads
       - /var/index_uploads:/app/public/index_uploads
       - /var/contacts_uploads:/app/public/contacts_uploads
+      - ./prisma:/app/prisma
     stdin_open: true
     tty: true
 
 volumes:
-  ucs_uploads:
+  prisma:
   index_uploads:
   contacts_uploads:

@@ -2,7 +2,7 @@
  * @file custom-error.js
  * @module custom-error
  * @description Custom error class extending the built-in Error class.
- * @version 1.0.0
+ * @version 1.0.1
  * @author [Kizito S.M.]
  */
 

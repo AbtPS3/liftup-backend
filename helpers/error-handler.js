@@ -2,11 +2,11 @@
  * @file error-handler.js
  * @module error-handler
  * @description Class for handling errors and generating appropriate responses.
- * @version 1.0.0
+ * @version 1.0.1
  * @author [Kizito S.M.]
  */
 
-import CustomErrorLogger from "./error-helper.js";
+import CustomErrorLogger from "./custom-error-logger.js";
 
 /**
  * Class representing an error handler.
@@ -14,7 +14,7 @@ import CustomErrorLogger from "./error-helper.js";
  */
 class ErrorHandler {
   /** @type {CustomErrorLogger} */
-  logger;
+  errorLogger;
 
   /**
    * Creates a new instance of ErrorHandler.
@@ -22,7 +22,7 @@ class ErrorHandler {
    */
   constructor() {
     /** @type {CustomErrorLogger} */
-    this.logger = new CustomErrorLogger();
+    this.errorLogger = new CustomErrorLogger();
   }
 
   /**
@@ -38,7 +38,7 @@ class ErrorHandler {
   async handleError(err, req, res, next) {
     try {
       // Log the error using the custom logger
-      await this.logger.logError(err);
+      await this.errorLogger.logError(err);
 
       // Check if the request is authenticated
       const authenticated = req.decoded ? true : false;

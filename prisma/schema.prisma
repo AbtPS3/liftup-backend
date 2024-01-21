@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model elicitation {
+  id                          BigInt         @default(autoincrement())
+  base_entity_id              String         @id @db.VarChar
+  index_client_base_entity_id String         @db.VarChar
+  date_of_birth               String?        @db.VarChar
+  sex                         String         @db.VarChar
+  relationship                String         @db.VarChar
+  elicitation_number          String?        @db.VarChar
+  location_id                 String?        @db.VarChar(256)
+  elicitation_date            String         @db.VarChar
+  age_at_elicitation          Int?
+  data_source                 String?        @db.VarChar(256)
+  locations                   locations?     @relation(fields: [location_id], references: [location_uuid])
+  index_client                index_client?  @relation(fields: [base_entity_id], references: [base_entity_id])
+  test_outcome                test_outcome[]
+}
+
+model test_outcome {
+  id                                           BigInt      @default(autoincrement())
+  base_entity_id                               String      @id @db.VarChar
+  sex                                          String      @db.VarChar
+  date_of_birth                                String?     @db.VarChar
+  age_at_outcome                               Int?
+  eligibility_for_testing                      String?     @db.VarChar
+  reasons_for_ineligibility_for_testing        String?     @db.VarChar
+  is_known_positive                            Boolean?
+  has_the_contact_client_been_tested           String?     @db.VarChar
+  reasons_conducting_testing_for_index_contact String?     @db.VarChar
+  test_results                                 String?     @db.VarChar
+  place_where_test_was_conducted               String?     @db.VarChar
+  enrolled_to_clinic                           String?     @db.VarChar
+  ctc_number                                   String?     @db.VarChar
+  event_date                                   String?     @db.VarChar
+  location_id                                  String?     @db.VarChar(256)
+  elicitation                                  elicitation @relation(fields: [base_entity_id], references: [base_entity_id])
+  locations                                    locations?  @relation(fields: [location_id], references: [location_uuid])
+}
+
+model index_client {
+  id                    BigInt        @default(autoincrement())
+  base_entity_id        String        @id @db.VarChar
+  date_of_birth         String        @db.VarChar
+  sex                   String        @db.VarChar
+  ctc_number            String        @db.VarChar
+  hiv_registration_date String?       @db.VarChar
+  ucs_registration_date String?       @db.VarChar
+  elicitation_date      String?       @db.VarChar
+  data_source           String?       @db.VarChar(256)
+  elicitation           elicitation[]
+}
+
+model locations {
+  location_uuid String         @id @db.VarChar
+  hfr_code      String?        @db.VarChar
+  test_outcome  test_outcome[]
+  elicitation   elicitation[]
+}

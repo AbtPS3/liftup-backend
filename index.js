@@ -2,7 +2,7 @@
  * @file index.js
  * @module index
  * @description Entry point for the UCS Uploader application.
- * @version 1.0.0
+ * @version 1.0.1
  * @author Kizito S.M.
  */
 
@@ -10,10 +10,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
+import "express-async-errors";
+import { PrismaClient } from "@prisma/client";
 
 import ErrorHandler from "./helpers/error-handler.js";
-import AuthenticateJwt from "./middleware/authenticate-jwt.js";
 import uploadRouter from "./routes/upload-router.js";
+import authenticationRouter from "./routes/authentication-router.js";
+import dashboardRouter from "./routes/dashboard-router.js";
 
 /**
  * Class representing the UCS Uploader application server.
@@ -27,17 +30,16 @@ class AppServer {
   constructor() {
     // Initialize Express application
     this.app = express();
-    // Set the port from the environment variable or default to 3000
-    this.port = process.env.NODE_PORT || 3000;
-    // Authentication middleware
-    this.auth = AuthenticateJwt;
-
+    // Set the port from the environment variable or default to 3010
+    this.port = process.env.NODE_PORT || 3010;
     // Initialize middleware
     this.initializeMiddleware();
     // Initialize routes
     this.initializeRoutes();
     // Initialize error handling
     this.initializeErrorHandling();
+    // Initialize Prisma Client for DB
+    this.prisma = new PrismaClient();
   }
 
   /**
@@ -53,6 +55,15 @@ class AppServer {
     this.app.use(express.urlencoded({ extended: false }));
     // Enable Cross-Origin Resource Sharing (CORS)
     this.app.use(cors());
+    // Middleware to handle Prisma connection lifecycle
+    this.app.use(async (req, res, next) => {
+      req.prisma = this.prisma;
+      try {
+        next();
+      } finally {
+        await this.prisma.$disconnect();
+      }
+    });
   }
 
   /**
@@ -60,11 +71,10 @@ class AppServer {
    * @private
    */
   async initializeRoutes() {
-    // Get the current module's URL
-    const currentModuleURL = new URL(import.meta.url);
-
     // Mount the uploadRouter at /api/v1/uploads
-    this.app.use("/api/v1/uploads", uploadRouter);
+    this.app.use("/api/v1/upload", uploadRouter);
+    this.app.use("/api/v1/authentication", authenticationRouter);
+    this.app.use("/api/v1/dashboard", dashboardRouter);
   }
 
   /**
@@ -87,7 +97,7 @@ class AppServer {
   start() {
     // Listen on the specified port
     this.app.listen(this.port, () => {
-      console.log("INFO: UCS Uploader is listening on " + this.port);
+      console.log("INFO: Lift-Up backend is listening on " + this.port);
     });
   }
 }

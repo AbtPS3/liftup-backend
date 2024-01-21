@@ -9,6 +9,8 @@
 import jwt from "jsonwebtoken";
 import CustomError from "../helpers/custom-error.js";
 
+const secret = process.env.JWT_SECRET;
+
 /**
  * Class representing JWT token authentication.
  * @class
@@ -18,7 +20,9 @@ class AuthenticateJwt {
    * Creates a new instance of AuthenticateJwt.
    * @constructor
    */
-  constructor() {}
+  constructor() {
+    this.secret = process.env.JWT_SECRET;
+  }
 
   /**
    * Decodes and verifies the provided JWT token.
@@ -29,7 +33,7 @@ class AuthenticateJwt {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>}
    */
-  async decode(req, res, next) {
+  async decode(req, _res, next) {
     try {
       // Extract the token from the request headers
       let token = req.headers["x-access-token"] || req.headers["authorization"];
@@ -50,7 +54,7 @@ class AuthenticateJwt {
       }
 
       // Verify and decode the JWT token using the secret
-      const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, secret);
 
       // Attach the decoded payload to the request object
       req.decoded = decoded;
