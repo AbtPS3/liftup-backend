@@ -97,7 +97,7 @@ class AppServer {
   start() {
     // Listen on the specified port
     this.app.listen(this.port, () => {
-      console.log("INFO: Lift-Up backend is listening on " + this.port);
+      console.log("INFO: Lift-Up backend is listening on:" + this.port);
     });
   }
 }
