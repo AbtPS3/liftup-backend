@@ -59,6 +59,16 @@ class DashboardController {
     }
   }
 
+  async getIndexClients(req, res, next) {
+    try {
+      const indexClients = await prisma.index_client.findMany();
+      return response.api(req, res, 200, [...indexClients]);
+    } catch (error) {
+      console.error(error.message);
+      next(error);
+    }
+  }
+
   async getOutcomes(req, res, next) {
     try {
       const startDate = req.query.startdate;
