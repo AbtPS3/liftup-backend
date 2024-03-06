@@ -38,6 +38,7 @@ router.get("/countelicitations", DashboardController.getElicitations);
 router.get("/rawoutcomes", DashboardController.rawOutcomes);
 router.get("/countoutcomes", DashboardController.getOutcomes);
 router.get("/indexclients", DashboardController.getIndexClients);
+router.get("/countindexclients", DashboardController.countIndexClients);
 
 // Export the router
 export default router;

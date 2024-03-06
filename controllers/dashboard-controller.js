@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
+import DateCalculator from "../helpers/calculate-age.js";
 
 dotenv.config();
 
@@ -63,6 +64,46 @@ class DashboardController {
     try {
       const indexClients = await prisma.index_client.findMany();
       return response.api(req, res, 200, [...indexClients]);
+    } catch (error) {
+      console.error(error.message);
+      next(error);
+    }
+  }
+
+  async countIndexClients(req, res, next) {
+    const { locationid, startdate, enddate } = req.query;
+    try {
+      // Fetch location_uuid based on locationid
+      const location = await prisma.locations.findFirst({
+        where: {
+          hfr_code: locationid,
+        },
+        select: {
+          location_uuid: true,
+        },
+      });
+
+      if (!location) {
+        return "Location not found";
+      }
+
+      const startDate = req.query;
+
+      const countIndexClients = await prisma.index_client.count({
+        where: {
+          location_id: location.location_uuid, // Use location_id instead of location
+          sex: "Female",
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
+          hiv_registration_date: {
+            gte: startdate, // Convert startDate to Date object
+            lte: enddate, // Convert endDate to Date object
+          },
+        },
+      });
+
+      return response.api(req, res, 200, countIndexClients);
     } catch (error) {
       console.error(error.message);
       next(error);

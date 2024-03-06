@@ -55,12 +55,14 @@ model index_client {
   ucs_registration_date String?       @db.VarChar
   elicitation_date      String?       @db.VarChar
   data_source           String?       @db.VarChar(256)
+  location_id           String?       @db.VarChar(256)
   elicitation           elicitation[]
 }
 
 model locations {
   location_uuid String         @id @db.VarChar
   hfr_code      String?        @db.VarChar
+  region_name   String?        @db.VarChar
   test_outcome  test_outcome[]
   elicitation   elicitation[]
 }
