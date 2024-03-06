@@ -77,6 +77,9 @@ class DashboardController {
         where: {
           hfr_code: locationid,
         },
+        region_name: {
+          in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+        },
         select: {
           location_uuid: true,
         },
@@ -90,9 +93,9 @@ class DashboardController {
         where: {
           location_id: location.location_uuid,
           sex: "Female",
-          // date_of_birth: {
-          //   lt: DateCalculator.calculateBirthDate(14),
-          // },
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
           hiv_registration_date: {
             gte: startdate,
             lte: enddate,
