@@ -76,9 +76,9 @@ class DashboardController {
       const location = await prisma.locations.findFirst({
         where: {
           hfr_code: locationid,
-        },
-        region_name: {
-          in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+          region_name: {
+            in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+          },
         },
         select: {
           location_uuid: true,
@@ -97,12 +97,11 @@ class DashboardController {
             lt: DateCalculator.calculateBirthDate(14),
           },
           hiv_registration_date: {
-            gte: startdate,
+            gte: Date.parse(startdate).toString(),
             lte: enddate,
           },
         },
       });
-
       return response.api(req, res, 200, countIndexClients);
     } catch (error) {
       console.error(error.message);
