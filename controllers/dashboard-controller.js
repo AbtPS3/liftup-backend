@@ -13,6 +13,7 @@ import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
 import DateCalculator from "../helpers/calculate-age.js";
+import countElicitations from "../helpers/count-elicitations.js";
 
 dotenv.config();
 
@@ -89,7 +90,7 @@ class DashboardController {
         return "Location not found";
       }
 
-      const countIndexClients = await prisma.index_client.count({
+      const countAllIndexes = await prisma.index_client.count({
         where: {
           location_id: location.location_uuid,
           sex: "Female",
@@ -102,7 +103,48 @@ class DashboardController {
           },
         },
       });
-      return response.api(req, res, 200, countIndexClients);
+
+      const countImportedIndexes = await prisma.index_client.count({
+        where: {
+          location_id: location.location_uuid,
+          sex: "Female",
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
+          hiv_registration_date: {
+            gte: Date.parse(startdate).toString(),
+            lte: enddate,
+          },
+          data_source: "ctc_import",
+        },
+      });
+
+      const countElicitededClients = await prisma.index_client.count({
+        where: {
+          location_id: location.location_uuid,
+          sex: "Female",
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
+          elicitation: {
+            some: {
+              // elicitation_date: {
+              //   gte: Date.parse(startdate).toString(),
+              //   lte: enddate,
+              // },
+            },
+          },
+        },
+      });
+
+      const payload = {
+        ctcClients: countImportedIndexes,
+        ucsClients: countAllIndexes - countImportedIndexes,
+        totalClients: countAllIndexes,
+        elicitedClients: countElicitededClients,
+      };
+
+      return response.api(req, res, 200, payload);
     } catch (error) {
       console.error(error.message);
       next(error);
