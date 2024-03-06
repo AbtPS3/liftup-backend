@@ -73,7 +73,6 @@ class DashboardController {
   async countIndexClients(req, res, next) {
     const { locationid, startdate, enddate } = req.query;
     try {
-      // Fetch location_uuid based on locationid
       const location = await prisma.locations.findFirst({
         where: {
           hfr_code: locationid,
@@ -87,18 +86,16 @@ class DashboardController {
         return "Location not found";
       }
 
-      const startDate = req.query;
-
       const countIndexClients = await prisma.index_client.count({
         where: {
-          location_id: location.location_uuid, // Use location_id instead of location
+          location_id: location.location_uuid,
           sex: "Female",
-          date_of_birth: {
-            lt: DateCalculator.calculateBirthDate(14),
-          },
+          // date_of_birth: {
+          //   lt: DateCalculator.calculateBirthDate(14),
+          // },
           hiv_registration_date: {
-            gte: startdate, // Convert startDate to Date object
-            lte: enddate, // Convert endDate to Date object
+            gte: startdate,
+            lte: enddate,
           },
         },
       });
