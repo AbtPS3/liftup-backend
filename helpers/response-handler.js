@@ -13,7 +13,7 @@ class ResponseHandler {
 
   constructor() {}
 
-  static async api(req, res, status, payload, rejected, rejectedRows) {
+  static async api(req, res, status, payload) {
     // Log every response action
     const infoLogger = new CustomErrorLogger();
     var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;

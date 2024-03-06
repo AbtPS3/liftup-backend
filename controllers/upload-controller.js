@@ -80,6 +80,14 @@ class UploadController {
 
       // Capture the original file name to determine if it's for clients or contacts
       const originalFileName = req.file.originalname;
+
+      // Fetch ctcNumbers from the provided endpoint
+      const ctcNumbersResponse = await fetch("http://170.187.199.69:8090/get-uploaded-ctc-numbers");
+      const ctcNumbers = await ctcNumbersResponse.json();
+
+      // Extract ctc_numbers from the response
+      const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
+
       const fileNameParts = originalFileName.split("_");
       const uploadType =
         fileNameParts[1] === "clients" || fileNameParts[1] === "contacts" ? fileNameParts[1] : null;
@@ -91,31 +99,38 @@ class UploadController {
 
       // Process the uploaded CSV file
       const results = [];
+      const rejectedRows = [];
       const csvStream = csvParser({ headers: true });
 
       // Flag to check if it's the first row
       let isFirstRow = true;
       csvStream.on("data", (data) => {
-        // Check if it's the first row
-        if (isFirstRow) {
-          // Add the specified columns to the header row
-          data.providerId = "providerId";
-          data.team = "team";
-          data.teamId = "teamId";
-          data.locationId = "locationId";
+        // Check if ctcNumber is in existingCtcNumbers
+        const ctcNumber = data.ctc_number;
+        if (!existingCtcNumbers.includes(ctcNumber)) {
+          // Check if it's the first row
+          if (isFirstRow) {
+            // Add the specified columns to the header row
+            data.providerId = "providerId";
+            data.team = "team";
+            data.teamId = "teamId";
+            data.locationId = "locationId";
 
-          // Update the flag to false for subsequent rows
-          isFirstRow = false;
+            // Update the flag to false for subsequent rows
+            isFirstRow = false;
+          } else {
+            // For every other row, obtain the data from the decoded token
+            data.providerId = req.decoded.data.providerId;
+            data.team = req.decoded.data.team;
+            data.teamId = req.decoded.data.teamId;
+            data.locationId = req.decoded.data.locationId;
+          }
+
+          // Push the processed data to the results array
+          results.push(data);
         } else {
-          // For every other row, obtain the data from the decoded token
-          data.providerId = req.decoded.data.providerId;
-          data.team = req.decoded.data.team;
-          data.teamId = req.decoded.data.teamId;
-          data.locationId = req.decoded.data.locationId;
+          rejectedRows.push(data);
         }
-
-        // Push the processed data to the results array
-        results.push(data);
       });
 
       // Event handler when the CSV stream ends
@@ -147,16 +162,20 @@ class UploadController {
           // Write records to the CSV file
           await csvWriter.writeRecords(results);
 
+          const rejected = rejectedRows.length > 0 ? true : false;
+
           // Response payload
           const payload = {
             token: null,
             authenticated: true,
             message: "File uploaded, processed, and saved successfully!",
+            rejected: rejected,
+            rejectedRows: rejectedRows,
           };
 
-          return response.api(req, res, 201, payload, true, rejectedRows || []);
+          return response.api(req, res, 201, payload);
         } else {
-          throw new CustomError("No data available to write to CSV.", 400);
+          throw new CustomError("All rows were rejected.", 400);
         }
       });
 
