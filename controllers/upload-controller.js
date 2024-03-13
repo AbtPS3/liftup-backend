@@ -78,7 +78,7 @@ class UploadController {
         throw new Error("No file provided!");
       }
 
-      // Capture the original file name to determine if it's for clients or contacts
+      // Capture the original file name to determine if it's for clientscontacts
       const originalFileName = req.file.originalname;
 
       // Fetch ctcNumbers from the provided endpoint
@@ -106,8 +106,10 @@ class UploadController {
       let isFirstRow = true;
       csvStream.on("data", (data) => {
         // Check if ctcNumber is in existingCtcNumbers
-        const ctcNumber = data.ctc_number;
-        if (!existingCtcNumbers.includes(ctcNumber)) {
+        const ctcNumber = data._0;
+        if (existingCtcNumbers.includes(ctcNumber)) {
+          rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
+        } else {
           // Check if it's the first row
           if (isFirstRow) {
             // Add the specified columns to the header row
@@ -128,8 +130,6 @@ class UploadController {
 
           // Push the processed data to the results array
           results.push(data);
-        } else {
-          rejectedRows.push(data);
         }
       });
 
