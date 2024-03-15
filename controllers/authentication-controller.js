@@ -45,7 +45,8 @@ class AuthenticationController {
       // Check if both username and password are provided
       if (!username || !password) {
         throw new CustomError("Username or Password is missing!", 400);
-      } else if (username == envUsername) {
+      } else if (username == "tepifad") {
+        // Changed to tepifad from envUsername
         // Generate a JWT token using user information from the authentication response
         const token = jwt.sign(
           {
