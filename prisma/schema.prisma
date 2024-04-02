@@ -20,7 +20,7 @@ model elicitation {
   age_at_elicitation          Int?
   data_source                 String?        @db.VarChar(256)
   locations                   locations?     @relation(fields: [location_id], references: [location_uuid])
-  index_client                index_client?  @relation(fields: [base_entity_id], references: [base_entity_id])
+  index_client                index_client?  @relation(fields: [index_client_base_entity_id], references: [base_entity_id])
   test_outcome                test_outcome[]
 }
 

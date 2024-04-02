@@ -124,15 +124,41 @@ class DashboardController {
           location_id: location.location_uuid,
           sex: "Female",
           date_of_birth: {
-            lt: DateCalculator.calculateBirthDate(14),
+            gt: DateCalculator.calculateBirthDate(19),
           },
           elicitation: {
             some: {
-              // elicitation_date: {
-              //   gte: Date.parse(startdate).toString(),
-              //   lte: enddate,
-              // },
+              elicitation_date: {
+                gte: Date.parse(startdate).toString(),
+                lte: enddate,
+              },
             },
+          },
+        },
+      });
+
+      const countReachedIndexClients = await prisma.index_client.count({
+        where: {
+          location_id: location.location_uuid,
+          sex: "Female",
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
+          elicitation: {
+            some: {},
+          },
+        },
+      });
+
+      const countUnreachedIndexClients = await prisma.index_client.count({
+        where: {
+          location_id: location.location_uuid,
+          sex: "Female",
+          date_of_birth: {
+            lt: DateCalculator.calculateBirthDate(14),
+          },
+          elicitation: {
+            none: {},
           },
         },
       });
@@ -142,6 +168,8 @@ class DashboardController {
         ucsClients: countAllIndexes - countImportedIndexes,
         totalClients: countAllIndexes,
         elicitedClients: countElicitededClients,
+        unreachedClients: countUnreachedIndexClients,
+        reachedClients: countReachedIndexClients,
       };
 
       return response.api(req, res, 200, payload);
