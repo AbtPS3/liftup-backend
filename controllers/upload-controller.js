@@ -83,7 +83,7 @@ class UploadController {
 
       // Fetch ctcNumbers from the provided endpoint
       const ctcNumbersResponse = await fetch("http://170.187.199.69:8090/get-uploaded-ctc-numbers");
-      if (!ctcNumbersResponse) {
+      if (!ctcNumbersResponse.ok) {
         throw new Error("Duplicate checker service unavailable. Please retry later!");
       }
       const ctcNumbers = await ctcNumbersResponse.json();
