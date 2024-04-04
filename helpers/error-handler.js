@@ -48,7 +48,7 @@ class ErrorHandler {
         token: null,
         authenticated: authenticated,
         message: err.message,
-        // stack: err.stack,
+        stack: err.stack,
       };
 
       // Send the error response to the client
