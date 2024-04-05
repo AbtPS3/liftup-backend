@@ -19,15 +19,14 @@ else
     echo "$(date): This is a GitHub initiated update!" >> "$file_path"
 fi
 
-# Stop docker process
-# docker compose stop
-
 # Make sure you are on main branch
 git branch -M main
 
 # Pull the latest version
 git pull
 
-# Rebuild and restart docker
-# docker compose up -d --build
+# Update packages
+npm install --silent
+
+# Restart the application
 pm2 restart liftup-backend
