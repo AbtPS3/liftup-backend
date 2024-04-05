@@ -82,7 +82,7 @@ class UploadController {
       const originalFileName = req.file.originalname;
 
       // Fetch ctcNumbers from the provided endpoint
-      const ctcNumbersResponse = await fetch("http://170.187.199.69:8090/get-uploaded-ctc-numbers");
+      const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
       const ctcNumbers = await ctcNumbersResponse.json();
       console.log("CTC Numbers", ctcNumbers);
 

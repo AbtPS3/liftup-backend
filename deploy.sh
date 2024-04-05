@@ -20,7 +20,7 @@ else
 fi
 
 # Stop docker process
-docker compose stop
+# docker compose stop
 
 # Make sure you are on main branch
 git branch -M main
@@ -29,4 +29,5 @@ git branch -M main
 git pull
 
 # Rebuild and restart docker
-docker compose up -d --build
+# docker compose up -d --build
+pm2 restart liftup-backend
