@@ -13,3 +13,5 @@ logs
 .env
 update.sh
 git-actions.txt
+package-lock.json
+
