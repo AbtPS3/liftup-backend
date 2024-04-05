@@ -12,3 +12,4 @@ logs
 .idea
 .env
 update.sh
+git-actions.txt
