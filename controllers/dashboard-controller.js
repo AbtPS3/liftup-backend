@@ -13,7 +13,7 @@ import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
 import DateCalculator from "../helpers/calculate-age.js";
-import countElicitations from "../helpers/count-elicitations.js";
+// import countElicitations from "../helpers/count-elicitations.js";
 
 dotenv.config();
 
@@ -61,7 +61,7 @@ class DashboardController {
     }
   }
 
-  async getIndexClients(req, res, next) {
+  async rawIndexClients(req, res, next) {
     try {
       const indexClients = await prisma.index_client.findMany({
         where: {
@@ -71,105 +71,6 @@ class DashboardController {
         },
       });
       return response.api(req, res, 200, [...indexClients]);
-    } catch (error) {
-      console.error(error.message);
-      next(error);
-    }
-  }
-
-  async countIndexClientsOld(req, res, next) {
-    const { locationid, startdate, enddate } = req.query;
-    try {
-      const location = await prisma.locations.findFirst({
-        where: {
-          hfr_code: locationid,
-          region_name: {
-            in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
-          },
-        },
-        select: {
-          location_uuid: true,
-        },
-      });
-
-      if (!location) {
-        return "Location not found";
-      }
-
-      const countAllIndexes = await prisma.index_client.count({
-        where: {
-          location_id: location.location_uuid,
-          sex: "Female",
-          date_of_birth: {
-            lt: DateCalculator.calculateBirthDate(14),
-          },
-          hiv_registration_date: {
-            gte: Date.parse(startdate).toString(),
-            lte: enddate,
-          },
-        },
-      });
-
-      const countImportedIndexes = await prisma.index_client.count({
-        where: {
-          location_id: location.location_uuid,
-          sex: "Female",
-          date_of_birth: {
-            lt: DateCalculator.calculateBirthDate(14),
-          },
-          hiv_registration_date: {
-            gte: Date.parse(startdate).toString(),
-            lte: enddate,
-          },
-          data_source: "ctc_import",
-        },
-      });
-
-      const countElicitedContactsResult = await prisma.$queryRaw`
-        SELECT COUNT(DISTINCT el.base_entity_id) FROM index_client ic
-        INNER JOIN elicitation el ON ic.base_entity_id = el.index_client_base_entity_id
-        INNER JOIN locations lc ON ic.location_id = lc.location_uuid
-        WHERE lc.hfr_code = ${Prisma.sql`${locationid}`}
-        AND ic.sex = 'Female'
-        AND el.elicitation_date BETWEEN ${Prisma.sql`${startdate}`} AND ${Prisma.sql`${enddate}`}
-        AND lc.region_name IN ('Dar es Salaam Region', 'Mwanza Region', 'Mbeya Region', 'Dodoma Region')
-        AND EXTRACT(YEAR FROM AGE(NOW(), ic.date_of_birth::TIMESTAMP)) >= 14
-      `;
-
-      const countReachedIndexClientsResult = await prisma.$queryRaw`
-        SELECT COUNT(DISTINCT ic.base_entity_id) FROM index_client ic
-        LEFT JOIN elicitation el ON ic.base_entity_id = el.index_client_base_entity_id
-        INNER JOIN locations lc ON ic.location_id = lc.location_uuid
-        WHERE lc.hfr_code = ${Prisma.sql`${locationid}`}
-        AND el.base_entity_id IS NOT NULL
-        AND ic.sex = 'Female'
-        AND el.elicitation_date BETWEEN ${Prisma.sql`${startdate}`} AND ${Prisma.sql`${enddate}`}
-        AND lc.region_name IN ('Dar es Salaam Region', 'Mwanza Region', 'Mbeya Region', 'Dodoma Region')
-        AND EXTRACT(YEAR FROM AGE(NOW(), ic.date_of_birth::TIMESTAMP)) >= 14
-      `;
-
-      const countUnreachedIndexClientsResult = await prisma.$queryRaw`
-        SELECT COUNT(DISTINCT ic.base_entity_id) FROM index_client ic
-        LEFT JOIN elicitation el ON ic.base_entity_id = el.index_client_base_entity_id
-        INNER JOIN locations lc ON ic.location_id = lc.location_uuid
-        WHERE lc.hfr_code = ${Prisma.sql`${locationid}`}
-        AND el.base_entity_id IS NULL
-        AND ic.sex = 'Female'
-        AND ucs_registration_date BETWEEN ${Prisma.sql`${startdate}`} AND ${Prisma.sql`${enddate}`}
-        AND lc.region_name IN ('Dar es Salaam Region', 'Mwanza Region', 'Mbeya Region', 'Dodoma Region')
-        AND EXTRACT(YEAR FROM AGE(NOW(), ic.date_of_birth::TIMESTAMP)) >= 14
-      `;
-
-      const payload = {
-        ctcClients: countImportedIndexes,
-        ucsClients: countAllIndexes - countImportedIndexes,
-        totalClients: countAllIndexes,
-        reachedClients: parseInt(countReachedIndexClientsResult[0].count, 10),
-        unreachedClients: parseInt(countUnreachedIndexClientsResult[0].count, 10),
-        elicitedContacts: parseInt(countElicitedContactsResult[0].count, 10),
-      };
-
-      return response.api(req, res, 200, payload);
     } catch (error) {
       console.error(error.message);
       next(error);
@@ -246,19 +147,6 @@ class DashboardController {
           },
         });
 
-        // Query to count reached index clients for the current day
-        // const countReachedIndexClientsResult = await prisma.$queryRaw`
-        //   SELECT COUNT(DISTINCT ic.base_entity_id) FROM index_client ic
-        //   LEFT JOIN elicitation el ON ic.base_entity_id = el.index_client_base_entity_id
-        //   INNER JOIN locations lc ON ic.location_id = lc.location_uuid
-        //   WHERE lc.hfr_code = ${Prisma.sql`${locationid}`}
-        //   AND el.base_entity_id IS NOT NULL
-        //   AND ic.sex = 'Female'
-        //   AND el.elicitation_date LIKE ${Prisma.sql`${formattedDate}`}
-        //   AND lc.region_name IN ('Dar es Salaam Region', 'Mwanza Region', 'Mbeya Region', 'Dodoma Region')
-        //   AND EXTRACT(YEAR FROM AGE(NOW(), ic.date_of_birth::TIMESTAMP)) >= 14
-        // `;
-
         // Count reached clients
         const countReachedIndexClientsResult = await prisma.index_client.count({
           where: {
@@ -295,22 +183,18 @@ class DashboardController {
           },
         });
 
-        // Query to count elicited contacts for the current day
-        // const countElicitedContactsResult = await prisma.$queryRaw`
-        //   SELECT COUNT(DISTINCT el.base_entity_id) FROM index_client ic
-        //   INNER JOIN elicitation el ON ic.base_entity_id = el.index_client_base_entity_id
-        //   INNER JOIN locations lc ON ic.location_id = lc.location_uuid
-        //   WHERE lc.hfr_code = ${Prisma.sql`${locationid}`}
-        //   AND ic.sex = 'Female'
-        //   AND el.elicitation_date BETWEEN ${Prisma.sql`${formattedDate}`} AND ${Prisma.sql`${formattedDate}`}
-        //   AND lc.region_name IN ('Dar es Salaam Region', 'Mwanza Region', 'Mbeya Region', 'Dodoma Region')
-        //   AND EXTRACT(YEAR FROM AGE(NOW(), ic.date_of_birth::TIMESTAMP)) >= 14
-        // `;
-
-        console.log(
-          "Querying data for:",
-          new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-        );
+        const countElicitedContacts = await prisma.elicitation.count({
+          where: {
+            location_id: location.location_uuid,
+            elicitation_date: {
+              gte: formattedDate,
+              lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // Next day
+            },
+            date_of_birth: {
+              gt: DateCalculator.calculateBirthDate(19),
+            },
+          },
+        });
 
         countsByDay[formattedDate] = {
           totalClients: countAllIndices,
@@ -318,7 +202,7 @@ class DashboardController {
           ucsClients: countAllIndices - countCtcIndices,
           reachedClients: countReachedIndexClientsResult,
           unreachedClients: countUnreachedIndexClientsResult,
-          // elicitedContacts: parseInt(countElicitedContactsResult[0].count, 10),
+          elicitedContacts: countElicitedContacts,
         };
       }
 
