@@ -153,8 +153,8 @@ class UploadController {
           }
 
           // Set the filePath based on the determined upload directory
-          // const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
-          const filePath = join(__dirname, `/opt/ucs_uploads/${uploadDirectory}`, originalFileName);
+          const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
+          // const filePath = join(__dirname, `/opt/ucs_uploads/${uploadDirectory}`, originalFileName);
 
           // Create a CSV writer instance
           const csvWriter = createObjectCsvWriter({
