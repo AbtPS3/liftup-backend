@@ -12,6 +12,7 @@ logs
 .idea
 .env
 update.sh
+update-prod.sh
+update-test.sh
 git-actions.txt
 package-lock.json
-
