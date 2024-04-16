@@ -30,3 +30,4 @@ npm install --silent
 
 # Restart the application
 pm2 restart liftup-backend
+
