@@ -107,7 +107,7 @@ class DashboardController {
       }
 
       // Initialize an object to store counts for each day
-      const countsByDay = {};
+      const countsByDay = [];
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
@@ -196,14 +196,19 @@ class DashboardController {
           },
         });
 
-        countsByDay[formattedDate] = {
+        const results = {};
+        results["date"] = formattedDate;
+        results["index_clients"] = countsByDay;
+
+        countsByDay.push({
+          date: formattedDate,
           totalClients: countAllIndices,
           ctcClients: countCtcIndices,
           ucsClients: countAllIndices - countCtcIndices,
           reachedClients: countReachedIndexClientsResult,
           unreachedClients: countUnreachedIndexClientsResult,
           elicitedContacts: countElicitedContacts,
-        };
+        });
       }
 
       return response.api(req, res, 200, countsByDay);
