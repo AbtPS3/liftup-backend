@@ -599,7 +599,7 @@ class DashboardController {
 
       // Calculate the total number of days in the date range
       const totalDays = Math.ceil(
-        (new Date(enddate) - new Date(startdate)) / (1000 * 60 * 60 * 24)
+        (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
       );
 
       // Limit search queries to 31 days to manage server resources
@@ -612,7 +612,7 @@ class DashboardController {
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
-        const currentDate = new Date(startdate);
+        const currentDate = new Date(startDate);
         currentDate.setDate(currentDate.getDate() + i);
 
         const formattedDate = currentDate.toISOString().slice(0, 10);
