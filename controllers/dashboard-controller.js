@@ -107,7 +107,7 @@ class DashboardController {
       }
 
       // Initialize an object to store counts for each day
-      const countsByDay = {};
+      const countsByDay = [];
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
@@ -196,14 +196,19 @@ class DashboardController {
           },
         });
 
-        countsByDay[formattedDate] = {
+        const results = {};
+        results["date"] = formattedDate;
+        results["index_clients"] = countsByDay;
+
+        countsByDay.push({
+          date: formattedDate,
           totalClients: countAllIndices,
           ctcClients: countCtcIndices,
           ucsClients: countAllIndices - countCtcIndices,
           reachedClients: countReachedIndexClientsResult,
           unreachedClients: countUnreachedIndexClientsResult,
           elicitedContacts: countElicitedContacts,
-        };
+        });
       }
 
       return response.api(req, res, 200, countsByDay);
@@ -228,337 +233,363 @@ class DashboardController {
 
       const paediatricTestOutcomesArray = payloadArray[0].paediatricTestOutcomes;
 
-      paediatricTestOutcomesArray.push(
-        // 0 -4 (less than 5)
-        await co.getAll(
-          "facility",
-          "Female",
-          0,
-          4,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Female",
-          0,
-          4,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          0,
-          4,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          0,
-          4,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          0,
-          4,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          0,
-          4,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          0,
-          4,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          0,
-          4,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-
-        // 5 - 9
-        await co.getAll(
-          "facility",
-          "Female",
-          5,
-          9,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Female",
-          5,
-          9,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          5,
-          9,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          5,
-          9,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          5,
-          9,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          5,
-          9,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          5,
-          9,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          5,
-          9,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-
-        // 10 - 14
-        await co.getAll(
-          "facility",
-          "Female",
-          10,
-          14,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Female",
-          10,
-          14,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          10,
-          14,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          10,
-          14,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          10,
-          14,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          10,
-          14,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          10,
-          14,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          10,
-          14,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-
-        // 15 - 19
-        await co.getAll(
-          "facility",
-          "Female",
-          15,
-          19,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Female",
-          15,
-          19,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          15,
-          19,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Female",
-          15,
-          19,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          15,
-          19,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "facility",
-          "Male",
-          15,
-          19,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          15,
-          19,
-          "non_biological_child",
-          startDate,
-          endDate,
-          locationId
-        ),
-        await co.getAll(
-          "community",
-          "Male",
-          15,
-          19,
-          "biological_child",
-          startDate,
-          endDate,
-          locationId
-        )
+      // Calculate the total number of days in the date range
+      const totalDays = Math.ceil(
+        (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
       );
 
-      payloadArray[0].paediatricTestOutcomes = paediatricTestOutcomesArray;
+      // Limit search queries to 31 days to manage server resources
+      if (totalDays > 31) {
+        throw new Error("Date range too long, maximum 31 days allowed!");
+      }
+
+      // Loop through each day in the date range
+      for (let i = 0; i < totalDays + 1; i++) {
+        // Initialize an object to store counts for each day
+        const countsByDay = [];
+
+        const currentDate = new Date(startDate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const formattedDate = currentDate.toISOString().slice(0, 10);
+
+        countsByDay.push(
+          // 0 -4 (less than 5)
+          await co.getAll(
+            "facility",
+            "Female",
+            0,
+            4,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Female",
+            0,
+            4,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            0,
+            4,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            0,
+            4,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            0,
+            4,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            0,
+            4,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            0,
+            4,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            0,
+            4,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+
+          // 5 - 9
+          await co.getAll(
+            "facility",
+            "Female",
+            5,
+            9,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Female",
+            5,
+            9,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            5,
+            9,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            5,
+            9,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            5,
+            9,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            5,
+            9,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            5,
+            9,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            5,
+            9,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+
+          // 10 - 14
+          await co.getAll(
+            "facility",
+            "Female",
+            10,
+            14,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Female",
+            10,
+            14,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            10,
+            14,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            10,
+            14,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            10,
+            14,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            10,
+            14,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            10,
+            14,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            10,
+            14,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+
+          // 15 - 19
+          await co.getAll(
+            "facility",
+            "Female",
+            15,
+            19,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Female",
+            15,
+            19,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            15,
+            19,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Female",
+            15,
+            19,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            15,
+            19,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "facility",
+            "Male",
+            15,
+            19,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            15,
+            19,
+            "non_biological_child",
+            startDate,
+            endDate,
+            locationId
+          ),
+          await co.getAll(
+            "community",
+            "Male",
+            15,
+            19,
+            "biological_child",
+            startDate,
+            endDate,
+            locationId
+          )
+        );
+
+        const results = {};
+        results["date"] = formattedDate;
+        results["outcomes"] = countsByDay;
+
+        // Query goes here
+        paediatricTestOutcomesArray.push(results);
+      }
 
       // Send the payload back
       return response.api(req, res, 200, [...payloadArray]);
@@ -581,26 +612,180 @@ class DashboardController {
 
       const paediatricContactsArray = payloadArray[0].paediatricContacts;
 
-      paediatricContactsArray.push(
-        await ce.getAll("Male", 0, 4, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 0, 4, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 5, 9, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 5, 9, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 10, 14, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 10, 14, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 15, 19, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 15, 19, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 0, 4, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 0, 4, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 5, 9, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 5, 9, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 10, 14, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 10, 14, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 15, 19, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 15, 19, "non_biological_child", startDate, endDate, locationId)
+      // Calculate the total number of days in the date range
+      const totalDays = Math.ceil(
+        (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
       );
 
-      payloadArray[0].paediatricContacts = paediatricContactsArray;
+      // Limit search queries to 31 days to manage server resources
+      if (totalDays > 31) {
+        throw new Error("Date range too long, maximum 31 days allowed!");
+      }
+
+      // Loop through each day in the date range
+      for (let i = 0; i < totalDays + 1; i++) {
+        // Initialize an object to store counts for each day
+        const countsByDay = [];
+
+        const currentDate = new Date(startDate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const formattedDate = currentDate.toISOString().slice(0, 10);
+
+        countsByDay.push(
+          await ce.getAll(
+            "Male",
+            0,
+            4,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            0,
+            4,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            5,
+            9,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            5,
+            9,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            10,
+            14,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            10,
+            14,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            15,
+            19,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            15,
+            19,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            0,
+            4,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            0,
+            4,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            5,
+            9,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            5,
+            9,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            10,
+            14,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            10,
+            14,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            15,
+            19,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            15,
+            19,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          )
+        );
+
+        const results = {};
+        results["date"] = formattedDate;
+        results["elicitations"] = countsByDay;
+
+        // Query goes here
+        paediatricContactsArray.push(results);
+      }
 
       // Send the payload back
       return response.api(req, res, 200, [...payloadArray]);

@@ -17,10 +17,13 @@ class CountElicitations {
           relationship: relationship,
           elicitation_date: {
             gte: startDate,
-            lte: endDate,
+            lt: endDate,
           },
           locations: {
             hfr_code: locationId,
+            region_name: {
+              in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+            },
           },
         },
       });
