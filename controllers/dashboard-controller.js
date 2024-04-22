@@ -608,7 +608,7 @@ class DashboardController {
       }
 
       // Initialize an object to store counts for each day
-      const countsByDay = {};
+      const countsByDay = [];
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
@@ -619,153 +619,155 @@ class DashboardController {
 
         // Query goes here
         paediatricContactsArray.push(
-          await ce.getAll(
-            "Male",
-            0,
-            4,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            0,
-            4,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            5,
-            9,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            5,
-            9,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            10,
-            14,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            10,
-            14,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            15,
-            19,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Male",
-            15,
-            19,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            0,
-            4,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            0,
-            4,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            5,
-            9,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            5,
-            9,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            10,
-            14,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            10,
-            14,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            15,
-            19,
-            "biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
-          ),
-          await ce.getAll(
-            "Female",
-            15,
-            19,
-            "non_biological_child",
-            formattedDate,
-            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-            locationId
+          countsByDay[formattedDate].push(
+            await ce.getAll(
+              "Male",
+              0,
+              4,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              0,
+              4,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              5,
+              9,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              5,
+              9,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              10,
+              14,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              10,
+              14,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              15,
+              19,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Male",
+              15,
+              19,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              0,
+              4,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              0,
+              4,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              5,
+              9,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              5,
+              9,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              10,
+              14,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              10,
+              14,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              15,
+              19,
+              "biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            ),
+            await ce.getAll(
+              "Female",
+              15,
+              19,
+              "non_biological_child",
+              formattedDate,
+              new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+              locationId
+            )
           )
         );
 
-        payloadArray[0].paediatricContacts = paediatricContactsArray;
+        // payloadArray[0].paediatricContacts = paediatricContactsArray;
       }
 
       // paediatricContactsArray.push(
