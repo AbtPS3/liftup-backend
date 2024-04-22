@@ -38,7 +38,7 @@ class CountElicitations {
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
-        const currentDate = new Date(startdate);
+        const currentDate = new Date(startDate);
         currentDate.setDate(currentDate.getDate() + i);
         const formattedDate = currentDate.toISOString().slice(0, 10);
 
