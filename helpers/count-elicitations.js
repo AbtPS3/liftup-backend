@@ -22,7 +22,7 @@ class CountElicitations {
           locations: {
             hfr_code: locationId,
             region_name: {
-              in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+              in: ["Mbeya Region", "Mwanza Region", "Dodoma Region"],
             },
           },
         },
