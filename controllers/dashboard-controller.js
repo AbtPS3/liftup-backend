@@ -577,14 +577,14 @@ class DashboardController {
             locationId
           )
         );
+
+        const results = {};
+        results["date"] = formattedDate;
+        results["outcomes"] = countsByDay;
+
+        // Query goes here
+        paediatricTestOutcomesArray.push(results);
       }
-
-      const results = {};
-      results["date"] = formattedDate;
-      results["outcomes"] = countsByDay;
-
-      // Query goes here
-      paediatricTestOutcomesArray.push(results);
 
       // Send the payload back
       return response.api(req, res, 200, [...payloadArray]);
