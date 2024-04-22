@@ -765,7 +765,8 @@ class DashboardController {
         );
 
         const results = {};
-        results[formattedDate] = countsByDay;
+        results["date"] = formattedDate;
+        results["elicitations"] = countsByDay;
 
         // Query goes here
         paediatricContactsArray.push(results);
