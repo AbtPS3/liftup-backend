@@ -581,26 +581,213 @@ class DashboardController {
 
       const paediatricContactsArray = payloadArray[0].paediatricContacts;
 
-      paediatricContactsArray.push(
-        await ce.getAll("Male", 0, 4, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 0, 4, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 5, 9, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 5, 9, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 10, 14, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 10, 14, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 15, 19, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Male", 15, 19, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 0, 4, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 0, 4, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 5, 9, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 5, 9, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 10, 14, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 10, 14, "non_biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 15, 19, "biological_child", startDate, endDate, locationId),
-        await ce.getAll("Female", 15, 19, "non_biological_child", startDate, endDate, locationId)
+      const location = await prisma.locations.findFirst({
+        where: {
+          hfr_code: locationId,
+          region_name: {
+            in: ["Mbeya Region", "Mwanza Region", "Dodoma Region", "Dar es Salaam Region"],
+          },
+        },
+        select: {
+          location_uuid: true,
+        },
+      });
+
+      if (!location) {
+        return "Location not found";
+      }
+
+      // Calculate the total number of days in the date range
+      const totalDays = Math.ceil(
+        (new Date(enddate) - new Date(startdate)) / (1000 * 60 * 60 * 24)
       );
 
-      payloadArray[0].paediatricContacts = paediatricContactsArray;
+      // Limit search queries to 31 days to manage server resources
+      if (totalDays > 31) {
+        throw new Error("Date range too long, maximum 31 days allowed!");
+      }
+
+      // Initialize an object to store counts for each day
+      const countsByDay = {};
+
+      // Loop through each day in the date range
+      for (let i = 0; i < totalDays + 1; i++) {
+        const currentDate = new Date(startdate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const formattedDate = currentDate.toISOString().slice(0, 10);
+
+        // Query goes here
+        paediatricContactsArray.push(
+          await ce.getAll(
+            "Male",
+            0,
+            4,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            0,
+            4,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            5,
+            9,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            5,
+            9,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            10,
+            14,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            10,
+            14,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            15,
+            19,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Male",
+            15,
+            19,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            0,
+            4,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            0,
+            4,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            5,
+            9,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            5,
+            9,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            10,
+            14,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            10,
+            14,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            15,
+            19,
+            "biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          ),
+          await ce.getAll(
+            "Female",
+            15,
+            19,
+            "non_biological_child",
+            formattedDate,
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+            locationId
+          )
+        );
+
+        payloadArray[0].paediatricContacts = paediatricContactsArray;
+      }
+
+      // paediatricContactsArray.push(
+      //   await ce.getAll("Male", 0, 4, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 0, 4, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 5, 9, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 5, 9, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 10, 14, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 10, 14, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 15, 19, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Male", 15, 19, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 0, 4, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 0, 4, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 5, 9, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 5, 9, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 10, 14, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 10, 14, "non_biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 15, 19, "biological_child", startDate, endDate, locationId),
+      //   await ce.getAll("Female", 15, 19, "non_biological_child", startDate, endDate, locationId)
+      // );
+
+      // payloadArray[0].paediatricContacts = paediatricContactsArray;
 
       // Send the payload back
       return response.api(req, res, 200, [...payloadArray]);
