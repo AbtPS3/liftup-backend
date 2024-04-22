@@ -80,7 +80,7 @@ class DashboardController {
   async countIndexClients(req, res, next) {
     const { locationid, startdate, enddate } = req.query;
     try {
-      const location = await prisma.locations.findFirst({
+      const location = await prisma.locations.findFirstOrThrow({
         where: {
           hfr_code: locationid,
           region_name: {
@@ -92,9 +92,9 @@ class DashboardController {
         },
       });
 
-      if (!location) {
-        return "Location not found";
-      }
+      // if (!location) {
+      //   return "Location not found";
+      // }
 
       // Calculate the total number of days in the date range
       const totalDays = Math.ceil(
