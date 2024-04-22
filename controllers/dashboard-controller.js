@@ -608,7 +608,7 @@ class DashboardController {
       }
 
       // Initialize an object to store counts for each day
-      const countsByDay = [];
+      const countsByDay = {};
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
@@ -619,7 +619,7 @@ class DashboardController {
 
         // Query goes here
         paediatricContactsArray.push(
-          countsByDay[formattedDate].push(
+          countsByDay[formattedDate] = {
             await ce.getAll(
               "Male",
               0,
@@ -764,7 +764,7 @@ class DashboardController {
               new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
               locationId
             )
-          )
+          }
         );
 
         // payloadArray[0].paediatricContacts = paediatricContactsArray;
