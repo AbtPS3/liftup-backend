@@ -102,9 +102,9 @@ class DashboardController {
       );
 
       // Limit search queries to 31 days to manage server resources
-      if (totalDays > 31) {
-        throw new Error("Date range too long, maximum 31 days allowed!");
-      }
+      // if (totalDays > 31) {
+      //   throw new Error("Date range too long, maximum 31 days allowed!");
+      // }
 
       // Initialize an object to store counts for each day
       const countsByDay = [];
@@ -239,9 +239,9 @@ class DashboardController {
       );
 
       // Limit search queries to 31 days to manage server resources
-      if (totalDays > 31) {
-        throw new Error("Date range too long, maximum 31 days allowed!");
-      }
+      // if (totalDays > 31) {
+      //   throw new Error("Date range too long, maximum 31 days allowed!");
+      // }
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
@@ -618,9 +618,9 @@ class DashboardController {
       );
 
       // Limit search queries to 31 days to manage server resources
-      if (totalDays > 31) {
-        throw new Error("Date range too long, maximum 31 days allowed!");
-      }
+      // if (totalDays > 31) {
+      //   throw new Error("Date range too long, maximum 31 days allowed!");
+      // }
 
       // Loop through each day in the date range
       for (let i = 0; i < totalDays + 1; i++) {
