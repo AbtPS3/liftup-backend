@@ -16,7 +16,7 @@ class CountOutcomes {
         where: {
           event_date: {
             gte: startDate,
-            lte: endDate,
+            lt: endDate,
           },
           sex: sex,
           age_at_outcome: {
@@ -28,6 +28,9 @@ class CountOutcomes {
           },
           locations: {
             hfr_code: locationId,
+            region_name: {
+              in: ["Mbeya Region", "Mwanza Region", "Dodoma Region"],
+            },
           },
           place_where_test_was_conducted: null,
           is_known_positive: true,
