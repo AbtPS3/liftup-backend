@@ -6,14 +6,13 @@
  * @author Kizito S.M.
  */
 
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 
 import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
 import DateCalculator from "../helpers/calculate-age.js";
-// import countElicitations from "../helpers/count-elicitations.js";
 
 dotenv.config();
 
