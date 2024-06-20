@@ -13,6 +13,7 @@ import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
 import DateCalculator from "../helpers/calculate-age.js";
+import dashboardService from "../services/dashboard-service.js";
 
 dotenv.config();
 
@@ -790,6 +791,17 @@ class DashboardController {
       return response.api(req, res, 200, [...payloadArray]);
     } catch (error) {
       console.error(error.message);
+      next(error);
+    }
+  }
+
+  async getIndexClients(req, res, next) {
+    try {
+      const { location, startDate, endDate } = req.body;
+      const clients = await dashboardService.getIndexClients(location, startDate, endDate);
+      return response.api(req, res, 200, [...clients]);
+    } catch (error) {
+      // console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
       next(error);
     }
   }

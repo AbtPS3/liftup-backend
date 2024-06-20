@@ -1,8 +1,8 @@
 /**
- * @file dashboard-router.js
+ * @file dashboard-router-v2.js
  * @module dashboard-router
  * @description Express router for handling dashboard routes.
- * @version 1.0.1
+ * @version 1.0.2
  * @author Kizito S.M.
  */
 
@@ -33,12 +33,7 @@ router.use(
   })
 );
 
-router.get("/rawelicitations", DashboardController.rawElicitations);
-router.get("/countelicitations", DashboardController.getElicitations);
-router.get("/rawoutcomes", DashboardController.rawOutcomes);
-router.get("/countoutcomes", DashboardController.getOutcomes);
-router.get("/rawindexclients", DashboardController.rawIndexClients);
-router.get("/countindexclients", DashboardController.countIndexClients);
+router.post("/get-index-clients", DashboardController.getIndexClients);
 
 // Export the router
 export default router;

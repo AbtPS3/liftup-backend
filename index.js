@@ -17,6 +17,7 @@ import ErrorHandler from "./helpers/error-handler.js";
 import uploadRouter from "./routes/upload-router.js";
 import authenticationRouter from "./routes/authentication-router.js";
 import dashboardRouter from "./routes/dashboard-router.js";
+import dashboardRouterV2 from "./routes/dashboard-router-v2.js";
 
 /**
  * Class representing the UCS Uploader application server.
@@ -75,6 +76,7 @@ class AppServer {
     this.app.use("/api/v1/upload", uploadRouter);
     this.app.use("/api/v1/authentication", authenticationRouter);
     this.app.use("/api/v1/dashboard", dashboardRouter);
+    this.app.use("/api/v2/dashboard", dashboardRouterV2);
   }
 
   /**
