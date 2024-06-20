@@ -13,8 +13,8 @@ class DashboardService {
           in: locationArray,
         },
         ucs_registration_date: {
-          gte: startDate,
-          lte: endDate,
+          gte: new Date(startDate),
+          lte: new Date(endDate),
         },
       },
     });
