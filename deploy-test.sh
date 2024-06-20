@@ -28,6 +28,9 @@ git pull
 # Update packages
 npm install --silent
 
+# Generate a new prisma client
+npx prisma generate
+
 # Restart the application
 pm2 restart liftup-backend
 
