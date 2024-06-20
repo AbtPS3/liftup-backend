@@ -66,3 +66,42 @@ model locations {
   test_outcome  test_outcome[]
   elicitation   elicitation[]
 }
+
+model IndexClientsMV {
+  id                    Int       @id @default(autoincrement())
+  hfr_code              String?
+  ucs_registration_date DateTime?
+  ctcclients            BigInt?
+  ucsclients            BigInt?
+  reachedclients        BigInt?
+  unreachedclients      BigInt?
+  totalelicitations     BigInt?
+
+  @@map("index_clients_mv")
+}
+
+model ElicitationsMV {
+  id                Int       @id @default(autoincrement())
+  hfr_code          String?
+  elicitation_date  DateTime?
+  age_group         String?
+  relationship      String?
+  sex               String?
+  totalelicitations BigInt?
+
+  @@map("elicitations_mv")
+}
+
+model OutcomesMV {
+  id           Int       @id @default(autoincrement())
+  hfr_code     String?
+  outcome_date DateTime?
+  age_group    String?
+  relationship String?
+  sex          String?
+  testingpoint String?
+  test_results String?
+  count        BigInt?
+
+  @@map("outcomes_mv")
+}
