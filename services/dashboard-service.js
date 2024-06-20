@@ -6,8 +6,18 @@ class DashboardService {
     this.prisma = new PrismaClient();
   }
 
-  async getIndexClients(location, startDate, endDate) {
-    const indexClients = await this.prisma.indexClientsMV.findMany();
+  async getIndexClients(locationArray, startDate, endDate) {
+    const indexClients = await this.prisma.indexClientsMV.findMany({
+      where: {
+        hfr_code: {
+          in: locationArray,
+        },
+        ucs_registration_date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
     return indexClients;
   }
 }
