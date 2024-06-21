@@ -799,7 +799,7 @@ class DashboardController {
     try {
       const { location, startDate, endDate } = req.body;
       const clients = await dashboardService.getIndexClients(location, startDate, endDate);
-      return response.api(req, res, 200, [...clients]);
+      return response.api(req, res, 200, clients);
     } catch (error) {
       // console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
       next(error);
