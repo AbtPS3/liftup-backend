@@ -47,6 +47,7 @@ class DashboardService {
       };
 
       // Delete the original keys to clean up the object
+      delete transformedClient.id;
       delete transformedClient.ucs_registration_date;
       delete transformedClient.ctcclients;
       delete transformedClient.ucsclients;
