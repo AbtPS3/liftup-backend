@@ -7,6 +7,7 @@ class DashboardService {
   }
 
   async getIndexClients(locationArray, startDate, endDate) {
+    // Query the data from the DB
     const indexClients = await this.prisma.indexClientsMV.findMany({
       where: {
         hfr_code: {
@@ -18,18 +19,6 @@ class DashboardService {
         },
       },
     });
-
-    // Group the data by hfr_code
-    // const groupedData = indexClients.reduce((acc, client) => {
-    //   const { hfr_code } = client;
-    //   if (!acc[hfr_code]) {
-    //     acc[hfr_code] = [];
-    //   }
-    //   acc[hfr_code].push(client);
-    //   return acc;
-    // }, {});
-
-    // return groupedData;
 
     // Group the data by hfr_code and transform it
     const groupedData = indexClients.reduce((acc, client) => {
@@ -66,4 +55,4 @@ class DashboardService {
   }
 }
 
-export default new DashboardService();
+export default DashboardService();

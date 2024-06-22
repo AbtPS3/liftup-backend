@@ -13,7 +13,7 @@ import response from "../helpers/response-handler.js";
 import ce from "../helpers/count-elicitations.js";
 import co from "../helpers/count-outcomes.js";
 import DateCalculator from "../helpers/calculate-age.js";
-import dashboardService from "../services/dashboard-service.js";
+import DashboardService from "../services/dashboard-service.js";
 
 dotenv.config();
 
@@ -32,7 +32,9 @@ class DashboardController {
    * Constructor for DashboardController.
    * @constructor
    */
-  constructor() {}
+  constructor() {
+    this.dashboardService = new DashboardService();
+  }
 
   /**
    * Handles requests to the root path.
@@ -798,10 +800,10 @@ class DashboardController {
   async getIndexClients(req, res, next) {
     try {
       const { location, startDate, endDate } = req.body;
-      const clients = await dashboardService.getIndexClients(location, startDate, endDate);
+      const clients = await this.dashboardService.getIndexClients(location, startDate, endDate);
       return response.api(req, res, 200, clients);
     } catch (error) {
-      // console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
+      console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
       next(error);
     }
   }
