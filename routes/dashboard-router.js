@@ -33,12 +33,12 @@ router.use(
   })
 );
 
-router.get("/rawelicitations", DashboardController.rawElicitations);
-router.get("/countelicitations", DashboardController.getElicitations);
-router.get("/rawoutcomes", DashboardController.rawOutcomes);
-router.get("/countoutcomes", DashboardController.getOutcomes);
 router.get("/rawindexclients", DashboardController.rawIndexClients);
-router.get("/countindexclients", DashboardController.countIndexClients);
+router.get("/rawelicitations", DashboardController.rawElicitations);
+router.get("/rawoutcomes", DashboardController.rawOutcomes);
+router.get("/countelicitations", DashboardController.getElicitations);
+router.get("/countoutcomes", DashboardController.getOutcomes);
+router.get("/countindexclients", DashboardController.getIndexClients);
 
 // Export the router
 export default router;

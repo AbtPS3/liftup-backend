@@ -33,7 +33,8 @@ router.use(
   })
 );
 
-router.post("/get-index-clients", DashboardController.getIndexClients);
+router.post("/count-index-clients", DashboardController.countIndexClients);
+router.post("/count-elicitations", DashboardController.countElicitations);
 
 // Export the router
 export default router;

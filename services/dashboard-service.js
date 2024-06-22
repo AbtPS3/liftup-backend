@@ -6,7 +6,7 @@ class DashboardService {
     this.prisma = new PrismaClient();
   }
 
-  async getIndexClients(locationArray, startDate, endDate) {
+  async countIndexClients(locationArray, startDate, endDate) {
     // Query the data from the DB
     const indexClients = await this.prisma.indexClientsMV.findMany({
       where: {
@@ -48,6 +48,52 @@ class DashboardService {
         acc[hfr_code] = [];
       }
       acc[hfr_code].push(transformedClient);
+      return acc;
+    }, {});
+
+    return groupedData;
+  }
+
+  async countElicitations(locationArray, startDate, endDate) {
+    // Query the data from the DB
+    const elicitations = await this.prisma.elicitationsMV.findMany({
+      where: {
+        hfr_code: {
+          in: locationArray,
+        },
+        ucs_registration_date: {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        },
+      },
+    });
+
+    // Group the data by hfr_code and transform it
+    const groupedData = elicitations.reduce((acc, elicitation) => {
+      const { hfr_code, ...rest } = elicitation;
+
+      // Remove the id field and rename keys
+      const transformedElicitation = {
+        ...rest,
+        elicitationDate: rest.elicitation_date,
+        ageGroup: rest.age_group,
+        relationship: rest.relationship,
+        sex: rest.sex,
+        totalElicitations: rest.totalelicitations,
+      };
+
+      // Delete the original keys to clean up the object
+      delete transformedElicitation.id;
+      delete transformedElicitation.elicitation_date;
+      delete transformedElicitation.age_group;
+      delete transformedElicitation.relationship;
+      delete transformedElicitation.sex;
+      delete transformedElicitation.totalelicitations;
+
+      if (!acc[hfr_code]) {
+        acc[hfr_code] = [];
+      }
+      acc[hfr_code].push(transformedElicitation);
       return acc;
     }, {});
 

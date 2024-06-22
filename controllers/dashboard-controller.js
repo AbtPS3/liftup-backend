@@ -80,7 +80,7 @@ class DashboardController {
     }
   }
 
-  async countIndexClients(req, res, next) {
+  async getIndexClients(req, res, next) {
     const { locationid, startdate, enddate } = req.query;
     try {
       const location = await prisma.locations.findFirstOrThrow({
@@ -798,10 +798,10 @@ class DashboardController {
     }
   }
 
-  async getIndexClients(req, res, next) {
+  async countIndexClients(req, res, next) {
     try {
       const { location, startDate, endDate } = req.body;
-      const clients = await this.dashboardService.getIndexClients(location, startDate, endDate);
+      const clients = await this.dashboardService.countIndexClients(location, startDate, endDate);
       return response.api(req, res, 200, clients);
     } catch (error) {
       console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
