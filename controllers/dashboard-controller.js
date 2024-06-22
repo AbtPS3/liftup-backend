@@ -34,6 +34,7 @@ class DashboardController {
    */
   constructor() {
     this.dashboardService = new DashboardService();
+    this.getIndexClients = this.getIndexClients.bind(this);
   }
 
   /**
