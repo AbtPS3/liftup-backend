@@ -808,6 +808,21 @@ class DashboardController {
       next(error);
     }
   }
+
+  async countElicitations(req, res, next) {
+    try {
+      const { location, startDate, endDate } = req.body;
+      const elicitations = await this.dashboardService.countElicitations(
+        location,
+        startDate,
+        endDate
+      );
+      return response.api(req, res, 200, elicitations);
+    } catch (error) {
+      console.error("ERROR GETTING ELICITATIONS: \n", error.message);
+      next(error);
+    }
+  }
 }
 
 export default new DashboardController();
