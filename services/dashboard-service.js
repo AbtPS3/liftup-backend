@@ -61,7 +61,7 @@ class DashboardService {
         hfr_code: {
           in: locationArray,
         },
-        ucs_registration_date: {
+        elicitation_date: {
           gte: new Date(startDate),
           lte: new Date(endDate),
         },
