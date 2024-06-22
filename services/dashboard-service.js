@@ -86,8 +86,6 @@ class DashboardService {
       delete transformedElicitation.id;
       delete transformedElicitation.elicitation_date;
       delete transformedElicitation.age_group;
-      delete transformedElicitation.relationship;
-      delete transformedElicitation.sex;
       delete transformedElicitation.totalelicitations;
 
       if (!acc[hfr_code]) {
