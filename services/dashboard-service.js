@@ -58,9 +58,9 @@ class DashboardService {
     // Query the data from the DB
     const elicitations = await this.prisma.elicitationsMV.findMany({
       where: {
-        // hfr_code: {
-        //   in: locationArray,
-        // },
+        hfr_code: {
+          in: locationArray,
+        },
         relationship: {
           in: ["biological_child", "non_biological_child", "sibling"],
         },
