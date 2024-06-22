@@ -61,6 +61,9 @@ class DashboardService {
         hfr_code: {
           in: locationArray,
         },
+        relationship: {
+          in: ["biological_child", "non_biological_child", "sibling"],
+        },
         elicitation_date: {
           gte: new Date(startDate),
           lte: new Date(endDate),
