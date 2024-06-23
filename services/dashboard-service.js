@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-// import response from "../helpers/response-handler";
 
 class DashboardService {
   constructor() {

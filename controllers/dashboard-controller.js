@@ -32,11 +32,7 @@ class DashboardController {
    * Constructor for DashboardController.
    * @constructor
    */
-  constructor() {
-    this.dashboardService = new DashboardService();
-    this.countIndexClients = this.countIndexClients.bind(this);
-    this.countElicitations = this.countElicitations.bind(this);
-  }
+  constructor() {}
 
   /**
    * Handles requests to the root path.
@@ -795,32 +791,6 @@ class DashboardController {
       return response.api(req, res, 200, [...payloadArray]);
     } catch (error) {
       console.error(error.message);
-      next(error);
-    }
-  }
-
-  async countIndexClients(req, res, next) {
-    try {
-      const { location, startDate, endDate } = req.body;
-      const clients = await this.dashboardService.countIndexClients(location, startDate, endDate);
-      return response.api(req, res, 200, clients);
-    } catch (error) {
-      console.error("ERROR GETTING INDEX CLIENTS: \n", error.message);
-      next(error);
-    }
-  }
-
-  async countElicitations(req, res, next) {
-    try {
-      const { location, startDate, endDate } = req.body;
-      const elicitations = await this.dashboardService.countElicitations(
-        location,
-        startDate,
-        endDate
-      );
-      return response.api(req, res, 200, elicitations);
-    } catch (error) {
-      console.error("ERROR GETTING ELICITATIONS: \n", error.message);
       next(error);
     }
   }
