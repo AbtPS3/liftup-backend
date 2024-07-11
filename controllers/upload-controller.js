@@ -93,7 +93,11 @@ class UploadController {
 
       const fileNameParts = originalFileName.split("_");
       const uploadType =
-        fileNameParts[1] === "clients" || fileNameParts[1] === "contacts" ? fileNameParts[1] : null;
+        fileNameParts[1] === "clients" ||
+        fileNameParts[1] === "contacts" ||
+        fileNameParts[1] === "results"
+          ? fileNameParts[1]
+          : null;
 
       const fileBuffer = req.file.buffer;
 
@@ -110,7 +114,7 @@ class UploadController {
       csvStream.on("data", (data) => {
         // Check if ctcNumber is in existingCtcNumbers
         const ctcNumber = data._0;
-        if (existingCtcNumbers.includes(ctcNumber)) {
+        if (uploadType == "clients" && existingCtcNumbers.includes(ctcNumber)) {
           rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
         } else {
           // Check if it's the first row
@@ -147,14 +151,16 @@ class UploadController {
             uploadDirectory = "index_uploads";
           } else if (uploadType === "contacts") {
             uploadDirectory = "contacts_uploads";
+          } else if (uploadType === "results") {
+            uploadDirectory = "results_uploads";
           } else {
             console.error("UploadType:", uploadType);
-            return response.api(req, res, 201, "Upload type is null!" + req.file.originalname);
+            // return response.api(req, res, 500, "Upload type is null!" + req.file.originalname);
+            throw new Error(`Upload type is null! + ${req.file.originalname}`);
           }
 
           // Set the filePath based on the determined upload directory
           const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
-          // const filePath = join(__dirname, `/opt/ucs_uploads/${uploadDirectory}`, originalFileName);
 
           // Create a CSV writer instance
           const csvWriter = createObjectCsvWriter({
