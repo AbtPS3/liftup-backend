@@ -104,7 +104,7 @@ class AuthenticationController {
         const hasFacilityTag = locationTags.some((tag) => tag.name === "Facility");
 
         if (!hasFacilityTag) {
-          throw new CustomError("User is not allowed to add files!", 404);
+          throw new CustomError("User is not allowed to add files!", 401);
         }
 
         // Generate a JWT token using user information from the authentication response
