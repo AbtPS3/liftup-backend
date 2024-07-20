@@ -90,11 +90,21 @@ class AuthenticationController {
           axiosConfig
         );
 
-        // Extract username and password from the request body
-        const userType = await authResponse.data.team.locations[0].tags[0].name;
-        // Check if both username and password are provided
-        if (userType !== "Facility") {
-          throw new CustomError("User is not allowed to add files!", 400);
+        // @TODO: Delete this old implementation - July 20, 2024
+        // const userType = await authResponse.data.team.locations[0].tags[0].name;
+        // Check if both userType is not Facility
+        // if (userType !== "Facility") {
+        //   throw new CustomError("User is not allowed to add files!", 400);
+        // }
+
+        // Extract tags from the returned locations object
+        const locationTags = await authResponse.data.team.locations[0].tags;
+
+        // Check id any tag has the name "Facility"
+        const hasFacilityTag = locationTags.some((tag) => tag.name === "Facility");
+
+        if (!hasFacilityTag) {
+          throw new CustomError("User is not allowed to add files!", 404);
         }
 
         // Generate a JWT token using user information from the authentication response
