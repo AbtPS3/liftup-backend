@@ -175,6 +175,7 @@ class DashboardServiceV2 {
         newlyTestedNegative: rest.newly_tested_negative,
         newlyTestedPositive: rest.newly_tested_positive,
         count: rest.count,
+        notTested: rest.not_tested,
       };
 
       // Delete the original keys to clean up the object
@@ -187,6 +188,7 @@ class DashboardServiceV2 {
       delete transformedOutcome.newly_tested_negative;
       delete transformedOutcome.newly_tested_positive;
       delete transformedOutcome.count;
+      delete transformedOutcome.not_tested;
 
       if (!acc[hfr_code]) {
         acc[hfr_code] = [];

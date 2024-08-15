@@ -99,6 +99,7 @@ model OutcomesMV {
     newly_tested_positive Int
     newly_tested_negative Int
     count                 BigInt?
+    not_tested            Int
 
     @@map("outcomes_mv")
 }
