@@ -90,13 +90,6 @@ class AuthenticationController {
           axiosConfig
         );
 
-        // @TODO: Delete this old implementation - July 20, 2024
-        // const userType = await authResponse.data.team.locations[0].tags[0].name;
-        // Check if both userType is not Facility
-        // if (userType !== "Facility") {
-        //   throw new CustomError("User is not allowed to add files!", 400);
-        // }
-
         // Extract tags from the returned locations object
         const locationTags = await authResponse.data.team.locations[0].tags;
 
@@ -165,12 +158,6 @@ class AuthenticationController {
 
   // Get unauthorizedResponse Object
   async getUnauthorizedResponse() {
-    // const unauthorizedResponse = {
-    //   status: 401,
-    //   success: false,
-    //   message: "Unauthorized!",
-    // };
-
     const unauthorizedResponse = {
       status: null,
       success: null,

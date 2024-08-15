@@ -1,107 +1,106 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model elicitation {
-  id                          BigInt         @default(autoincrement())
-  base_entity_id              String         @id @db.VarChar
-  index_client_base_entity_id String         @db.VarChar
-  date_of_birth               String?        @db.VarChar
-  sex                         String         @db.VarChar
-  relationship                String         @db.VarChar
-  elicitation_number          String?        @db.VarChar
-  location_id                 String?        @db.VarChar(256)
-  elicitation_date            String         @db.VarChar
-  age_at_elicitation          Int?
-  data_source                 String?        @db.VarChar(256)
-  locations                   locations?     @relation(fields: [location_id], references: [location_uuid])
-  index_client                index_client?  @relation(fields: [index_client_base_entity_id], references: [base_entity_id])
-  test_outcome                test_outcome[]
+    id                          BigInt  @default(autoincrement())
+    base_entity_id              String  @id @db.VarChar
+    index_client_base_entity_id String  @db.VarChar
+    date_of_birth               String? @db.VarChar
+    sex                         String  @db.VarChar
+    relationship                String  @db.VarChar
+    elicitation_number          String? @db.VarChar
+    location_id                 String? @db.VarChar(256)
+    provider_id                 String? @db.VarChar(256)
+    elicitation_date            String  @db.VarChar
+    age_at_elicitation          Int?
+    data_source                 String? @db.VarChar(256)
 }
 
 model test_outcome {
-  id                                           BigInt      @default(autoincrement())
-  base_entity_id                               String      @id @db.VarChar
-  sex                                          String      @db.VarChar
-  date_of_birth                                String?     @db.VarChar
-  age_at_outcome                               Int?
-  eligibility_for_testing                      String?     @db.VarChar
-  reasons_for_ineligibility_for_testing        String?     @db.VarChar
-  is_known_positive                            Boolean?
-  has_the_contact_client_been_tested           String?     @db.VarChar
-  reasons_conducting_testing_for_index_contact String?     @db.VarChar
-  test_results                                 String?     @db.VarChar
-  place_where_test_was_conducted               String?     @db.VarChar
-  enrolled_to_clinic                           String?     @db.VarChar
-  ctc_number                                   String?     @db.VarChar
-  event_date                                   String?     @db.VarChar
-  location_id                                  String?     @db.VarChar(256)
-  elicitation                                  elicitation @relation(fields: [base_entity_id], references: [base_entity_id])
-  locations                                    locations?  @relation(fields: [location_id], references: [location_uuid])
+    id                                           BigInt   @default(autoincrement())
+    base_entity_id                               String   @id @db.VarChar
+    sex                                          String   @db.VarChar
+    date_of_birth                                String?  @db.VarChar
+    age_at_outcome                               Int?
+    eligibility_for_testing                      String?  @db.VarChar
+    reasons_for_ineligibility_for_testing        String?  @db.VarChar
+    is_known_positive                            Boolean?
+    has_the_contact_client_been_tested           String?  @db.VarChar
+    reasons_conducting_testing_for_index_contact String?  @db.VarChar
+    test_results                                 String?  @db.VarChar
+    place_where_test_was_conducted               String?  @db.VarChar
+    enrolled_to_clinic                           String?  @db.VarChar
+    ctc_number                                   String?  @db.VarChar
+    event_date                                   String?  @db.VarChar
+    location_id                                  String?  @db.VarChar(256)
+    provider_id                                  String?  @db.VarChar(256)
 }
 
 model index_client {
-  id                    BigInt        @default(autoincrement())
-  base_entity_id        String        @id @db.VarChar
-  date_of_birth         String        @db.VarChar
-  sex                   String        @db.VarChar
-  ctc_number            String        @db.VarChar
-  hiv_registration_date String?       @db.VarChar
-  ucs_registration_date String?       @db.VarChar
-  elicitation_date      String?       @db.VarChar
-  data_source           String?       @db.VarChar(256)
-  location_id           String?       @db.VarChar(256)
-  elicitation           elicitation[]
+    id                    BigInt  @default(autoincrement())
+    base_entity_id        String  @id @db.VarChar
+    date_of_birth         String  @db.VarChar
+    sex                   String  @db.VarChar
+    ctc_number            String  @db.VarChar
+    hiv_registration_date String? @db.VarChar
+    ucs_registration_date String? @db.VarChar
+    elicitation_date      String? @db.VarChar
+    data_source           String? @db.VarChar(256)
+    location_id           String? @db.VarChar
+    provider_id           String  @db.VarChar(256)
 }
 
 model locations {
-  location_uuid String         @id @db.VarChar
-  hfr_code      String?        @db.VarChar
-  region_name   String?        @db.VarChar
-  test_outcome  test_outcome[]
-  elicitation   elicitation[]
+    location_uuid String  @id @db.VarChar
+    hfr_code      String? @db.VarChar
+    region_name   String? @db.VarChar
 }
 
 model IndexClientsMV {
-  id                    Int       @id @default(autoincrement())
-  hfr_code              String?
-  ucs_registration_date DateTime?
-  ctcclients            BigInt?
-  ucsclients            BigInt?
-  reachedclients        BigInt?
-  unreachedclients      BigInt?
-  totalelicitations     BigInt?
+    id                    Int       @id @default(autoincrement())
+    hfr_code              String?
+    ucs_registration_date DateTime?
+    ctcclients            BigInt?
+    ucsclients            BigInt?
+    reachedclients        BigInt?
+    unreachedclients      BigInt?
+    totalelicitations     BigInt?
 
-  @@map("index_clients_mv")
+    @@map("index_clients_mv")
 }
 
 model ElicitationsMV {
-  id                Int       @id @default(autoincrement())
-  hfr_code          String?
-  elicitation_date  DateTime?
-  age_group         String?
-  relationship      String?
-  sex               String?
-  totalelicitations BigInt?
+    id                Int       @id @default(autoincrement())
+    hfr_code          String?
+    elicitation_date  DateTime?
+    age_group         String?
+    relationship      String?
+    sex               String?
+    totalelicitations BigInt?
 
-  @@map("elicitations_mv")
+    @@map("elicitations_mv")
 }
 
 model OutcomesMV {
-  id           Int       @id @default(autoincrement())
-  hfr_code     String?
-  outcome_date DateTime?
-  age_group    String?
-  relationship String?
-  sex          String?
-  testingpoint String?
-  test_results String?
-  count        BigInt?
+    id                    Int       @id @default(autoincrement())
+    hfr_code              String?
+    outcome_date          DateTime?
+    age_group             String?
+    relationship          String?
+    sex                   String?
+    testing_point         String?
+    known_positive        Int
+    newly_tested_positive Int
+    newly_tested_negative Int
+    count                 BigInt?
 
-  @@map("outcomes_mv")
+    @@map("outcomes_mv")
 }
+
+// MATERIALIZED VIEWS DO NOT RESPAWN ON prisma db pull, COPY THEM FIRST

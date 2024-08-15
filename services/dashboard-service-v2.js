@@ -170,8 +170,10 @@ class DashboardServiceV2 {
         ageGroup: rest.age_group,
         relationship: rest.relationship,
         sex: rest.sex,
-        testingPoint: rest.testingpoint,
-        testResults: rest.test_results,
+        testingPoint: rest.testing_point,
+        knownPositive: rest.known_positive,
+        newlyTestedNegative: rest.newly_tested_negative,
+        newlyTestedPositive: rest.newly_tested_positive,
         count: rest.count,
       };
 
@@ -180,8 +182,11 @@ class DashboardServiceV2 {
       delete transformedOutcome.hfr_code;
       delete transformedOutcome.outcome_date;
       delete transformedOutcome.age_group;
-      delete transformedOutcome.testingpoint;
-      delete transformedOutcome.test_results;
+      delete transformedOutcome.testing_point;
+      delete transformedOutcome.known_positive;
+      delete transformedOutcome.newly_tested_negative;
+      delete transformedOutcome.newly_tested_positive;
+      delete transformedOutcome.count;
 
       if (!acc[hfr_code]) {
         acc[hfr_code] = [];
