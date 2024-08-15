@@ -94,7 +94,7 @@ class DashboardServiceV2 {
           in: locationArray,
         },
         relationship: {
-          in: ["biological_child", "non_biological_child", "sibling"],
+          in: ["biological_child", "non_biological_child", "sibling", "sexual_partner"],
         },
         elicitation_date: {
           gte: new Date(startDate),
