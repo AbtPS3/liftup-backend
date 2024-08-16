@@ -151,7 +151,7 @@ class UploadController {
             authenticated: true,
             message: "File uploaded, processed, and saved successfully!",
             rejected: rejectedRows.length > 0,
-            rejectedRows,
+            rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
           };
 
           return response.api(req, res, 201, payload);
