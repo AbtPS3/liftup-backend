@@ -68,13 +68,19 @@ class UploadController {
       //     fetch("http://localhost:8091/get-uploaded-elicitation-numbers"),
       //   ]);
 
-      const ctcNumbersResponse = await Promise.all(fetch("http://localhost:8090/get-uploaded-ctc-numbers"));
-
-      if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
+      //   if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
       //   if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
 
-      const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
+      //   const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
+
       //   const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
+      // @TODO: Remove this chunk once elicitation endpoint above works
+      const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
+      if (!ctcNumbersResponse.ok) {
+        throw new Error("CTC Deduplicator checker unavailable. Retry later!");
+      }
+      const ctcNumbers = await ctcNumbersResponse.json();
+      const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
 
       const results = [];
       const rejectedRows = [];
