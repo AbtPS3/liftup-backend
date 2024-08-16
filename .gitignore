@@ -2,6 +2,7 @@
 node_modules
 logs
 .vscode
+public
 
 # Files
 *.local
