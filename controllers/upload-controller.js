@@ -63,16 +63,18 @@ class UploadController {
       const fileBuffer = req.file.buffer;
       const fileStream = streamifier.createReadStream(fileBuffer);
 
-      const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([
-        fetch("http://localhost:8090/get-uploaded-ctc-numbers"),
-        // fetch("http://localhost:8091/get-uploaded-elicitation-numbers"),
-      ]);
+      //   const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([
+      //     fetch("http://localhost:8090/get-uploaded-ctc-numbers"),
+      //     fetch("http://localhost:8091/get-uploaded-elicitation-numbers"),
+      //   ]);
+
+      const ctcNumbersResponse = await Promise.all(fetch("http://localhost:8090/get-uploaded-ctc-numbers"));
 
       if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
       //   if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
 
       const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
-      const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
+      //   const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
 
       const results = [];
       const rejectedRows = [];
