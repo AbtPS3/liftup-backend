@@ -146,11 +146,13 @@ class UploadController {
 
           await csvWriter.writeRecords(results);
 
+          const rejected = rejectedRows.length > 0;
+
           const payload = {
             token: null,
             authenticated: true,
             message: "File uploaded, processed, and saved successfully!",
-            rejected: rejectedRows.length > 0,
+            rejected: rejected,
             rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
           };
 
