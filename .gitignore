@@ -1,6 +1,4 @@
 # Folders
-public/contacts_uploads/*
-public/index_uploads/*
 node_modules
 logs
 .vscode
