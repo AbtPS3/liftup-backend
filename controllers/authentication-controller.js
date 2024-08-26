@@ -107,13 +107,6 @@ class AuthenticationController {
           throw new CustomError("User is not allowed to add files!", 401);
         }
 
-        // const clientFiles = this.authenticationService.getFileTypeCount(username, "clients");
-        // const contactFiles = await this.authenticationService.getFileTypeCount(username, "contacts");
-        // const resultFiles = await this.authenticationService.getFileTypeCount(username, "results");
-        // const acceptedRecords = await this.authenticationService.getSumImportedRecords(username);
-        // const rejectedRecords = await this.authenticationService.getSumRejectedRecords(username);
-        // const lastUploadDate = await this.authenticationService.getLastUploadDate(username);
-
         const clientFiles = await getFileTypeCount(username, "clients");
         const contactFiles = await getFileTypeCount(username, "contacts");
         const resultFiles = await getFileTypeCount(username, "results");
