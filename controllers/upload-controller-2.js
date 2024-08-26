@@ -12,10 +12,11 @@ import csvParser from "csv-parser";
 import pkg from "csv-writer";
 import streamifier from "streamifier";
 import dotenv from "dotenv";
+import crypto from "crypto";
+
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
-import { uploadStats } from "../services/upload-service-v2.js";
-import crypto from "crypto";
+import { uploadStats, getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
 
 dotenv.config();
 
@@ -150,12 +151,27 @@ class UploadController {
 
           const rejected = rejectedRows.length > 0;
 
+          const clientFiles = await getFileTypeCount(username, "clients");
+          const contactFiles = await getFileTypeCount(username, "contacts");
+          const resultFiles = await getFileTypeCount(username, "results");
+          const acceptedRecords = await getTotalImportedRecords(username);
+          const rejectedRecords = await getTotalRejectedRecords(username);
+          const lastUploadDate = await getLastUploadDate(username);
+
           const payload = {
             token: null,
             authenticated: true,
             message: "File uploaded, processed, and saved successfully!",
             rejected: rejected,
             rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
+            stats: {
+              clientFiles: clientFiles,
+              contactFiles: contactFiles,
+              resultFiles: resultFiles,
+              acceptedRecords: acceptedRecords,
+              rejectedRecords: rejectedRecords,
+              lastUploadDate: lastUploadDate,
+            },
           };
 
           const uploadStatsData = {

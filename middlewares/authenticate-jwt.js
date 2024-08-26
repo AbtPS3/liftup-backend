@@ -59,9 +59,6 @@ class AuthenticateJwt {
       // Attach the decoded payload to the request object
       req.decoded = decoded;
 
-      // @TODO: Remove this in PROD
-      console.log("DECODED REQ\n", req.decoded);
-
       // Move to the next middleware
       next();
     } catch (error) {
