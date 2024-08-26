@@ -151,12 +151,12 @@ class UploadController {
 
           const rejected = rejectedRows.length > 0;
 
-          const clientFiles = await getFileTypeCount(username, "clients");
-          const contactFiles = await getFileTypeCount(username, "contacts");
-          const resultFiles = await getFileTypeCount(username, "results");
-          const acceptedRecords = await getTotalImportedRecords(username);
-          const rejectedRecords = await getTotalRejectedRecords(username);
-          const lastUploadDate = await getLastUploadDate(username);
+          const clientFiles = await getFileTypeCount(await req.decoded.data.providerId, "clients");
+          const contactFiles = await getFileTypeCount(await req.decoded.data.providerId, "contacts");
+          const resultFiles = await getFileTypeCount(await req.decoded.data.providerId, "results");
+          const acceptedRecords = await getTotalImportedRecords(await req.decoded.data.providerId);
+          const rejectedRecords = await getTotalRejectedRecords(await req.decoded.data.providerId);
+          const lastUploadDate = await getLastUploadDate(await req.decoded.data.providerId);
 
           const payload = {
             token: null,
