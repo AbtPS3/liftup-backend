@@ -10,11 +10,13 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+import { PrismaClient } from "@prisma/client";
 
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
 import AuthenticationService from "../services/authentication-service.js";
+import { getFileTypeCount, getSumImportedRecords, getSumRejectedRecords, getLastUploadDate } from "../services/authentication-service-v2.js";
 
 /**
  * Controller class for handling user authentication.
@@ -29,6 +31,7 @@ class AuthenticationController {
     // Initialize AuthenticateJwt instance for authentication
     this.auth = new AuthenticateJwt();
     this.authenticationService = new AuthenticationService();
+    this.prisma = new PrismaClient();
   }
 
   /**
@@ -38,6 +41,7 @@ class AuthenticationController {
    * @param {Function} next - Express next middleware function.
    * @returns {Object} - JSON response containing the token and authentication status.
    */
+
   async login(req, res, next) {
     try {
       // Extract username and password from the request body
@@ -103,6 +107,20 @@ class AuthenticationController {
           throw new CustomError("User is not allowed to add files!", 401);
         }
 
+        // const clientFiles = this.authenticationService.getFileTypeCount(username, "clients");
+        // const contactFiles = await this.authenticationService.getFileTypeCount(username, "contacts");
+        // const resultFiles = await this.authenticationService.getFileTypeCount(username, "results");
+        // const acceptedRecords = await this.authenticationService.getSumImportedRecords(username);
+        // const rejectedRecords = await this.authenticationService.getSumRejectedRecords(username);
+        // const lastUploadDate = await this.authenticationService.getLastUploadDate(username);
+
+        const clientFiles = getFileTypeCount(username, "clients");
+        const contactFiles = getFileTypeCount(username, "contacts");
+        const resultFiles = getFileTypeCount(username, "results");
+        const acceptedRecords = getSumImportedRecords(username);
+        const rejectedRecords = getSumRejectedRecords(username);
+        const lastUploadDate = getLastUploadDate(username);
+
         // Generate a JWT token using user information from the authentication response
         const token = jwt.sign(
           {
@@ -115,12 +133,12 @@ class AuthenticationController {
               facility: authResponse.data.team.locations[0].display,
               userBaseEntityId: authResponse.data.user.baseEntityId,
               userUploadStats: {
-                clientFiles: await this.authenticationService.getFileTypeCount(username, "clients"),
-                contactFiles: await this.authenticationService.getFileTypeCount(username, "contacts"),
-                resultFiles: await this.authenticationService.getFileTypeCount(username, "results"),
-                acceptedRecords: await this.authenticationService.getSumImportedRecords(username),
-                rejectedRecords: await this.authenticationService.getSumRejectedRecords(username),
-                lastUploadDate: await this.authenticationService.getLastUploadDate(username),
+                clientFiles: clientFiles,
+                contactFiles: contactFiles,
+                resultFiles: resultFiles,
+                acceptedRecords: acceptedRecords,
+                rejectedRecords: rejectedRecords,
+                lastUploadDate: lastUploadDate,
               },
             },
           },
@@ -209,6 +227,60 @@ class AuthenticationController {
       console.error(error.message);
       next(error);
     }
+  }
+
+  async getFileTypeCount(username, fileType) {
+    // Query the data from the DB
+    const fileTypeCount = await this.prisma.uploads.count({
+      where: {
+        username: username,
+        uploaded_file_type: fileType,
+      },
+    });
+
+    return fileTypeCount;
+  }
+
+  async getSumImportedRecords(username) {
+    const sumImportedRows = await this.prisma.uploads.aggregate({
+      where: {
+        username: username,
+      },
+      _sum: {
+        imported_rows: true,
+      },
+    });
+
+    return sumImportedRows._sum.imported_rows || 0;
+  }
+
+  async getSumRejectedRecords(username) {
+    const sumRejectedRows = await this.prisma.uploads.aggregate({
+      where: {
+        username: username,
+      },
+      _sum: {
+        rejected_rows: true,
+      },
+    });
+
+    return sumRejectedRows._sum.rejected_rows || 0;
+  }
+
+  async getLastUploadDate(username) {
+    const lastUploadDate = await prisma.uploads.findFirst({
+      where: {
+        username: username,
+      },
+      orderBy: {
+        upload_date: "desc",
+      },
+      select: {
+        upload_date: true,
+      },
+    });
+
+    return lastUploadDate?.upload_date || null;
   }
 }
 

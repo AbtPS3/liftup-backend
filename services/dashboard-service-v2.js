@@ -1,6 +1,6 @@
 /**
  * @file dashboard-service-v2.js
- * @module dashboard-service
+ * @module dashboard-service-v2
  * @description Version 2 Dashboard Service class for handling TEPI dashboard logic.
  * @version 1.0.2
  * @author Kizito S.M.

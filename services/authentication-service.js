@@ -1,7 +1,7 @@
 /**
- * @file authentication-service-v2.js
- * @module authentication-service
- * @description Version 2 Dashboard Service class for handling TEPI authentication logic.
+ * @file authentication-service.js
+ * @module services/authentication-service
+ * @description A Service class for handling TEPI authentication logic.
  * @version 1.0.0
  * @author Kizito S.M.
  */
@@ -26,7 +26,7 @@ class AuthenticationService {
   }
 
   async getSumImportedRecords(username) {
-    const sumImportedRows = await prisma.uploads.aggregate({
+    const sumImportedRows = await this.prisma.uploads.aggregate({
       where: {
         username: username,
       },
@@ -35,11 +35,11 @@ class AuthenticationService {
       },
     });
 
-    return sumImportedRows;
+    return sumImportedRows._sum.imported_rows || 0;
   }
 
   async getSumRejectedRecords(username) {
-    const sumRejectedRows = await prisma.uploads.aggregate({
+    const sumRejectedRows = await this.prisma.uploads.aggregate({
       where: {
         username: username,
       },
@@ -48,7 +48,7 @@ class AuthenticationService {
       },
     });
 
-    return sumRejectedRows;
+    return sumRejectedRows._sum.rejected_rows || 0;
   }
 
   async getLastUploadDate(username) {
@@ -64,7 +64,7 @@ class AuthenticationService {
       },
     });
 
-    return lastUploadDate?.upload_date;
+    return lastUploadDate?.upload_date || null;
   }
 }
 
