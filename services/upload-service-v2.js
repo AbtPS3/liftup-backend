@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function upload(uploadStats) {
+export default async function uploadStats(stats) {
   try {
     const save = await prisma.uploads.create({
-      data: uploadStats,
+      data: stats,
     });
 
     return save;
