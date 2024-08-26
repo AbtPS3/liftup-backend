@@ -14,6 +14,7 @@ dotenv.config();
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
+import AuthenticationService from "../services/authentication-service.js";
 
 /**
  * Controller class for handling user authentication.
@@ -27,6 +28,7 @@ class AuthenticationController {
   constructor() {
     // Initialize AuthenticateJwt instance for authentication
     this.auth = new AuthenticateJwt();
+    this.authenticationService = new AuthenticationService();
   }
 
   /**
@@ -42,11 +44,14 @@ class AuthenticationController {
       const { username, password } = req.body;
       const envUsername = atob(process.env.LIFTUP_USERNAME);
       const envPassword = atob(process.env.LIFTUP_PASSWORD);
+
       // Check if both username and password are provided
       if (!username || !password) {
         throw new CustomError("Username or Password is missing!", 400);
       } else if (username == "tepifad") {
         // Changed to tepifad from envUsername
+        // Get upload stats to be sent to the user
+
         // Generate a JWT token using user information from the authentication response
         const token = jwt.sign(
           {
@@ -57,6 +62,7 @@ class AuthenticationController {
               providerId: envUsername,
               locationId: "065fc2b9-15d6-4453-8134-4a3b02efd64e",
               facility: "TEPI Dev Facility",
+              userBaseEntityId: "e26a5499-a4db-4441-b5b1-3bb16d95822c",
             },
           },
           process.env.JWT_SECRET
@@ -85,10 +91,7 @@ class AuthenticationController {
         // Make an authentication request to an external service
         const opensrpIp = process.env.OPENSRP_IP;
         const opensrpPort = process.env.OPENSRP_PORT;
-        const authResponse = await axios.get(
-          "http://" + opensrpIp + ":" + opensrpPort + "/opensrp/security/authenticate",
-          axiosConfig
-        );
+        const authResponse = await axios.get("http://" + opensrpIp + ":" + opensrpPort + "/opensrp/security/authenticate", axiosConfig);
 
         // Extract tags from the returned locations object
         const locationTags = await authResponse.data.team.locations[0].tags;
@@ -110,6 +113,15 @@ class AuthenticationController {
               providerId: authResponse.data.user.username,
               locationId: authResponse.data.team.locations[0].uuid,
               facility: authResponse.data.team.locations[0].display,
+              userBaseEntityId: authResponse.data.user.baseEntityId,
+              userUploadStats: {
+                clientFiles: await this.authenticationService.getFileTypeCount(username, "clients"),
+                contactFiles: await this.authenticationService.getFileTypeCount(username, "contacts"),
+                resultFiles: await this.authenticationService.getFileTypeCount(username, "results"),
+                acceptedRecords: await this.authenticationService.getSumImportedRecords(username),
+                rejectedRecords: await this.authenticationService.getSumRejectedRecords(username),
+                lastUploadDate: await this.authenticationService.getLastUploadDate(username),
+              },
             },
           },
           process.env.JWT_SECRET

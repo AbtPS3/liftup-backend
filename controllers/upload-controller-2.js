@@ -82,7 +82,7 @@ class UploadController {
       const ctcNumbers = await ctcNumbersResponse.json();
       const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
 
-      const results = [];
+      const acceptedRows = [];
       const rejectedRows = [];
       const csvStream = csvParser({ headers: true });
       let isFirstRow = true;
@@ -115,12 +115,12 @@ class UploadController {
             data.teamId = req.decoded.data.teamId;
             data.locationId = req.decoded.data.locationId;
           }
-          results.push(data);
+          acceptedRows.push(data);
         }
       });
 
       csvStream.on("end", async () => {
-        if (results.length > 0) {
+        if (acceptedRows.length > 0) {
           let uploadDirectory;
 
           switch (uploadType) {
@@ -140,11 +140,11 @@ class UploadController {
           const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
           const csvWriter = createObjectCsvWriter({
             path: filePath,
-            header: Object.keys(results[0]),
+            header: Object.keys(acceptedRows[0]),
             alwaysQuote: true,
           });
 
-          await csvWriter.writeRecords(results);
+          await csvWriter.writeRecords(acceptedRows);
 
           const rejected = rejectedRows.length > 0;
 
@@ -154,6 +154,17 @@ class UploadController {
             message: "File uploaded, processed, and saved successfully!",
             rejected: rejected,
             rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
+          };
+
+          const uploadStats = {
+            id: crypto.randomUUID(),
+            user_base_entity_id: req.decoded.data.userBaseEntityId,
+            username: req.decoded.data.providerId,
+            uploaded_file: originalFileName,
+            uploaded_file_type: uploadType,
+            imported_rows: acceptedRows.length,
+            rejected_rows: rejectedRows.length,
+            upload_date: Date.now(),
           };
 
           return response.api(req, res, 201, payload);
