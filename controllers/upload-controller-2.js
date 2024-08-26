@@ -14,7 +14,7 @@ import streamifier from "streamifier";
 import dotenv from "dotenv";
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
-import upload from "../services/upload-service-v2.js";
+import { uploadStats } from "../services/upload-service-v2.js";
 import crypto from "crypto";
 
 dotenv.config();
@@ -169,7 +169,7 @@ class UploadController {
             upload_date: Date.now(),
           };
 
-          await upload.save(uploadStats);
+          await uploadStats(uploadStats);
 
           return response.api(req, res, 201, payload);
         } else {

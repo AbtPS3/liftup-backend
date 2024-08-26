@@ -114,12 +114,12 @@ class AuthenticationController {
         // const rejectedRecords = await this.authenticationService.getSumRejectedRecords(username);
         // const lastUploadDate = await this.authenticationService.getLastUploadDate(username);
 
-        const clientFiles = getFileTypeCount(username, "clients");
-        const contactFiles = getFileTypeCount(username, "contacts");
-        const resultFiles = getFileTypeCount(username, "results");
-        const acceptedRecords = getTotalImportedRecords(username);
-        const rejectedRecords = getTotalRejectedRecords(username);
-        const lastUploadDate = getLastUploadDate(username);
+        const clientFiles = await getFileTypeCount(username, "clients");
+        const contactFiles = await getFileTypeCount(username, "contacts");
+        const resultFiles = await getFileTypeCount(username, "results");
+        const acceptedRecords = await getTotalImportedRecords(username);
+        const rejectedRecords = await getTotalRejectedRecords(username);
+        const lastUploadDate = await getLastUploadDate(username);
 
         // Generate a JWT token using user information from the authentication response
         const token = jwt.sign(
