@@ -16,7 +16,7 @@ import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
 import AuthenticationService from "../services/authentication-service.js";
-import { getFileTypeCount, getSumImportedRecords, getSumRejectedRecords, getLastUploadDate } from "../services/authentication-service-v2.js";
+import { getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/authentication-service-v2.js";
 
 /**
  * Controller class for handling user authentication.
@@ -117,8 +117,8 @@ class AuthenticationController {
         const clientFiles = getFileTypeCount(username, "clients");
         const contactFiles = getFileTypeCount(username, "contacts");
         const resultFiles = getFileTypeCount(username, "results");
-        const acceptedRecords = getSumImportedRecords(username);
-        const rejectedRecords = getSumRejectedRecords(username);
+        const acceptedRecords = getTotalImportedRecords(username);
+        const rejectedRecords = getTotalRejectedRecords(username);
         const lastUploadDate = getLastUploadDate(username);
 
         // Generate a JWT token using user information from the authentication response
