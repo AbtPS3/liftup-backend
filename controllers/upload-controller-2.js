@@ -166,7 +166,7 @@ class UploadController {
             uploaded_file_type: uploadType,
             imported_rows: acceptedRows.length,
             rejected_rows: rejectedRows.length,
-            upload_date: Date.now(),
+            upload_date: new Date(),
           };
 
           await uploadStats(uploadStatsData);
