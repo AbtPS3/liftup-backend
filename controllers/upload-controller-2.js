@@ -158,7 +158,7 @@ class UploadController {
             rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
           };
 
-          const uploadStats = {
+          const uploadStatsData = {
             id: crypto.randomUUID(),
             user_base_entity_id: req.decoded.data.userBaseEntityId,
             username: req.decoded.data.providerId,
@@ -169,7 +169,7 @@ class UploadController {
             upload_date: Date.now(),
           };
 
-          await uploadStats(uploadStats);
+          await uploadStats(uploadStatsData);
 
           return response.api(req, res, 201, payload);
         } else {
