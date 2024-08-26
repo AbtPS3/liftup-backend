@@ -125,14 +125,6 @@ class AuthenticationController {
               locationId: authResponse.data.team.locations[0].uuid,
               facility: authResponse.data.team.locations[0].display,
               userBaseEntityId: authResponse.data.user.baseEntityId,
-              userUploadStats: {
-                clientFiles: clientFiles,
-                contactFiles: contactFiles,
-                resultFiles: resultFiles,
-                acceptedRecords: acceptedRecords,
-                rejectedRecords: rejectedRecords,
-                lastUploadDate: lastUploadDate,
-              },
             },
           },
           process.env.JWT_SECRET
@@ -143,6 +135,14 @@ class AuthenticationController {
           token: token,
           authenticated: true,
           message: "Login successful",
+          userUploadStats: {
+            clientFiles: clientFiles,
+            contactFiles: contactFiles,
+            resultFiles: resultFiles,
+            acceptedRecords: acceptedRecords,
+            rejectedRecords: rejectedRecords,
+            lastUploadDate: lastUploadDate,
+          },
         };
 
         return response.api(req, res, 200, payload);

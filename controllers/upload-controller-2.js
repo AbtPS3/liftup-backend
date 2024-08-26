@@ -147,9 +147,20 @@ class UploadController {
             alwaysQuote: true,
           });
 
-          await csvWriter.writeRecords(acceptedRows);
+          const uploadStatsData = {
+            id: crypto.randomUUID(),
+            user_base_entity_id: req.decoded.data.userBaseEntityId,
+            username: req.decoded.data.providerId,
+            uploaded_file: originalFileName,
+            uploaded_file_type: uploadType,
+            imported_rows: acceptedRows.length,
+            rejected_rows: rejectedRows.length,
+            upload_date: new Date(),
+          };
 
-          const rejected = rejectedRows.length > 0;
+          await uploadStats(uploadStatsData);
+
+          await csvWriter.writeRecords(acceptedRows);
 
           const clientFiles = await getFileTypeCount(await req.decoded.data.providerId, "clients");
           const contactFiles = await getFileTypeCount(await req.decoded.data.providerId, "contacts");
@@ -174,19 +185,7 @@ class UploadController {
             },
           };
 
-          const uploadStatsData = {
-            id: crypto.randomUUID(),
-            user_base_entity_id: req.decoded.data.userBaseEntityId,
-            username: req.decoded.data.providerId,
-            uploaded_file: originalFileName,
-            uploaded_file_type: uploadType,
-            imported_rows: acceptedRows.length,
-            rejected_rows: rejectedRows.length,
-            upload_date: new Date(),
-          };
-
-          await uploadStats(uploadStatsData);
-
+          const rejected = rejectedRows.length > 0;
           return response.api(req, res, 201, payload);
         } else {
           throw new CustomError("All rows were rejected.", 400);
