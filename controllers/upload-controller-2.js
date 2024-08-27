@@ -97,6 +97,8 @@ class UploadController {
           rejectionReason = "Duplicate CTC number in clients file";
         } else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
+        } else if (uploadType === "contacts" && existingElicitationNumbers.includes(data._13)) {
+          rejectionReason = "Duplicate elicitation number in uploaded file";
         } else if (uploadType === "results" && existingElicitationNumbers.includes(data._13)) {
           rejectionReason = "Duplicate elicitation number in uploaded file";
         }
