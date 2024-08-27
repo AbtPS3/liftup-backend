@@ -77,17 +77,6 @@ class UploadController {
       const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
       const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
 
-      // @TODO: Remove this
-      console.log("*** EXISTING ELICITATION NUMBERS\n", existingElicitationNumbers);
-
-      // Fetch CTC Numbers from the provided endpoint
-      // const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
-      // if (!ctcNumbersResponse.ok) {
-      //   throw new Error("CTC Deuplicator checker unavailable. Retry later!");
-      // }
-      // const ctcNumbers = await ctcNumbersResponse.json();
-      // const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
-
       const acceptedRows = [];
       const rejectedRows = [];
       const csvStream = csvParser({ headers: true });
@@ -108,8 +97,6 @@ class UploadController {
         else if (["contacts", "results"].includes(uploadType) && existingElicitationNumbers.includes(data._13)) {
           rejectionReason = uploadType === "contacts" ? "Duplicate elicitation number in contacts file" : "Duplicate elicitation number in results file";
         }
-
-        console.log("----- Rejection Reason ----", rejectionReason);
 
         // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
