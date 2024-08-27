@@ -109,6 +109,8 @@ class UploadController {
           rejectionReason = uploadType === "contacts" ? "Duplicate elicitation number in contacts file" : "Duplicate elicitation number in results file";
         }
 
+        console.log("----- Rejection Reason ----", rejectionReason);
+
         // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
