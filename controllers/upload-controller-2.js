@@ -103,6 +103,8 @@ class UploadController {
           rejectionReason = "Duplicate elicitation number in uploaded file";
         }
 
+        console.log("*** REJECTION ***", rejectionReason);
+
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
