@@ -96,20 +96,25 @@ class UploadController {
       csvStream.on("data", (data) => {
         let rejectionReason = "";
 
+        // Check for duplicate CTC numbers in 'clients' files
         if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
-        } else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
+        }
+        // Check for missing CTC numbers in 'contacts' and 'results' files
+        else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
-        } else if (["contacts", "results"].includes(uploadType) && existingElicitationNumbers.includes(data._13)) {
+        }
+        // Check for duplicate elicitation numbers in 'contacts' and 'results' files
+        else if (["contacts", "results"].includes(uploadType) && existingElicitationNumbers.includes(data._13)) {
           rejectionReason = uploadType === "contacts" ? "Duplicate elicitation number in contacts file" : "Duplicate elicitation number in results file";
         }
-        // @TODO: Remove this
-        console.log("*** REJECTION ***", rejectionReason);
 
+        // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
         } else {
+          // Processing for accepted rows
           if (isFirstRow) {
             data.providerId = "providerId";
             data.team = "team";
