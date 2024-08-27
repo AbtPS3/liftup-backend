@@ -77,6 +77,9 @@ class UploadController {
       const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
       const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
 
+      // @TODO: Remove this
+      console.log("*** EXISTING ELICITATION NUMBERS\n", existingElicitationNumbers);
+
       // Fetch CTC Numbers from the provided endpoint
       // const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
       // if (!ctcNumbersResponse.ok) {
@@ -97,12 +100,10 @@ class UploadController {
           rejectionReason = "Duplicate CTC number in clients file";
         } else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
-        } else if (uploadType === "contacts" && existingElicitationNumbers.includes(data._13)) {
-          rejectionReason = "Duplicate elicitation number in uploaded file";
-        } else if (uploadType === "results" && existingElicitationNumbers.includes(data._13)) {
-          rejectionReason = "Duplicate elicitation number in uploaded file";
+        } else if (["contacts", "results"].includes(uploadType) && existingElicitationNumbers.includes(data._13)) {
+          rejectionReason = uploadType === "contacts" ? "Duplicate elicitation number in contacts file" : "Duplicate elicitation number in results file";
         }
-
+        // @TODO: Remove this
         console.log("*** REJECTION ***", rejectionReason);
 
         if (rejectionReason) {
