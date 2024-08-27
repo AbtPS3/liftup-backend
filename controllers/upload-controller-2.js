@@ -168,6 +168,7 @@ class UploadController {
           const rejectedRecords = await getTotalRejectedRecords(await req.decoded.data.providerId);
           const lastUploadDate = await getLastUploadDate(await req.decoded.data.providerId);
 
+          const rejected = rejectedRows.length > 0;
           const payload = {
             token: null,
             authenticated: true,
@@ -184,7 +185,6 @@ class UploadController {
             },
           };
 
-          const rejected = rejectedRows.length > 0;
           return response.api(req, res, 201, payload);
         } else {
           throw new CustomError("All rows were rejected.", 400);
