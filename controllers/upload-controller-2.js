@@ -66,24 +66,24 @@ class UploadController {
       const fileBuffer = req.file.buffer;
       const fileStream = streamifier.createReadStream(fileBuffer);
 
-      // const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([
-      //   fetch("http://localhost:8090/get-uploaded-ctc-numbers"),
-      //   fetch("http://localhost:8091/get-uploaded-elicitation-numbers")
-      // ]);
+      const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([
+        fetch("http://localhost:8090/get-uploaded-ctc-numbers"),
+        fetch("http://localhost:8091/get-uploaded-elicitation-numbers")
+      ]);
 
-      // if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
-      // if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
+      if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
+      if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
 
-      // const existingCtcNumbers = (await ctcNumbersResponse.json()).map(item => item.ctc_number);
-      // const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map(item => item.elicitation_number);
+      const existingCtcNumbers = (await ctcNumbersResponse.json()).map(item => item.ctc_number);
+      const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map(item => item.elicitation_number);
 
       // Fetch CTC Numbers from the provided endpoint
-      const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
-      if (!ctcNumbersResponse.ok) {
-        throw new Error("CTC Deuplicator checker unavailable. Retry later!");
-      }
-      const ctcNumbers = await ctcNumbersResponse.json();
-      const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
+      // const ctcNumbersResponse = await fetch("http://localhost:8090/get-uploaded-ctc-numbers");
+      // if (!ctcNumbersResponse.ok) {
+      //   throw new Error("CTC Deuplicator checker unavailable. Retry later!");
+      // }
+      // const ctcNumbers = await ctcNumbersResponse.json();
+      // const existingCtcNumbers = ctcNumbers.map((item) => item.ctc_number);
 
       const acceptedRows = [];
       const rejectedRows = [];
@@ -97,9 +97,9 @@ class UploadController {
           rejectionReason = "Duplicate CTC number in clients file";
         } else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
-          // } else if (uploadType === "results" && existingElicitationNumbers.includes(data._13)) {
-          //   rejectionReason = "Duplicate elicitation number in uploaded file";
-          // }
+          } else if (uploadType === "results" && existingElicitationNumbers.includes(data._13)) {
+            rejectionReason = "Duplicate elicitation number in uploaded file";
+          }
         }
 
         if (rejectionReason) {
