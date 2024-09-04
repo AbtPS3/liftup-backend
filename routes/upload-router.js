@@ -9,7 +9,7 @@
 import { Router } from "express";
 import multer from "multer";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
-import UploadController from "../controllers/upload-controller-2.js";
+import UploadController from "../controllers/upload-controller-v2.js";
 
 /**
  * Express router for handling file uploads and related routes.

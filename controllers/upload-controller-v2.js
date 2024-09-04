@@ -13,6 +13,7 @@ import pkg from "csv-writer";
 import streamifier from "streamifier";
 import dotenv from "dotenv";
 import crypto from "crypto";
+import fs from "fs";
 
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
@@ -65,11 +66,10 @@ class UploadController {
       const uploadType = ["clients", "contacts", "results"].includes(fileNameParts[1]) ? fileNameParts[1] : null;
       const fileBuffer = req.file.buffer;
       const fileStream = streamifier.createReadStream(fileBuffer);
+      const ctcNumbersEndpoint = process.env.CTC_NUMBERS_ENDPOINT;
+      const elicitationNumbersEndpoint = process.env.ELICITATION_NUMBERS_ENDPOINT;
 
-      const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([
-        fetch("http://localhost:8090/get-uploaded-ctc-numbers"),
-        fetch("http://localhost:8091/get-uploaded-elicitation-numbers"),
-      ]);
+      const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([fetch(ctcNumbersEndpoint), fetch(elicitationNumbersEndpoint)]);
 
       if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
       if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
@@ -89,13 +89,25 @@ class UploadController {
         if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
         }
+
         // Check for missing CTC numbers in 'contacts' and 'results' files
         else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
         }
-        // Check for duplicate elicitation numbers in 'contacts' and 'results' files
-        else if (["contacts", "results"].includes(uploadType) && existingElicitationNumbers.includes(data._13)) {
-          rejectionReason = uploadType === "contacts" ? "Duplicate elicitation number in contacts file" : "Duplicate elicitation number in results file";
+
+        // Check for duplicate elicitation numbers in 'contacts' files
+        else if (uploadType === "contacts" && existingElicitationNumbers.includes(data._13)) {
+          rejectionReason = "Duplicate elicitation number in contacts file";
+        }
+
+        // Check for duplicate elicitation numbers and results in 'results' files
+        else if (uploadType === "results") {
+          const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === data._13);
+
+          if (elicitationData && elicitationData.has_results) {
+            // Elicitation number already has results, reject it
+            rejectionReason = "Elicitation number has already been registered with results.";
+          }
         }
 
         // If a rejection reason is found, add to rejectedRows array
@@ -138,6 +150,11 @@ class UploadController {
               throw new Error(`Invalid upload type: ${uploadType}`);
           }
 
+          // Make sure the upload folders are where they are supposed to be
+          const directoryPath = join(__dirname, `../public/${uploadDirectory}`);
+          if (!fs.existsSync(directoryPath)) {
+            fs.mkdirSync(directoryPath, { recursive: true });
+          }
           const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
           const csvWriter = createObjectCsvWriter({
             path: filePath,
