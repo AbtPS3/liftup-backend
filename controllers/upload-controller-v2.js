@@ -109,11 +109,11 @@ class UploadController {
           }
         }
 
-        // If a rejection reason is found, add to rejectedRows array
+        // If a rejection reason is found, add the row to the rejectedRows array
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
-          console.log("*** REJECTED ROWS ***", rejectedRows);
+          console.log("*** REJECTED ROW ***", data);
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
