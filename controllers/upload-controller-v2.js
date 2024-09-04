@@ -12,14 +12,13 @@ import csvParser from "csv-parser";
 import pkg from "csv-writer";
 import streamifier from "streamifier";
 import dotenv from "dotenv";
+dotenv.config();
 import crypto from "crypto";
 import fs from "fs";
 
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import { uploadStats, getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
-
-dotenv.config();
 
 const { createObjectCsvWriter } = pkg;
 const currentModuleURL = new URL(import.meta.url);
@@ -114,6 +113,7 @@ class UploadController {
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
+          console.log("*** REJECTED ROWS ***", rejectedRows);
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
