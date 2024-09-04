@@ -91,6 +91,8 @@ class UploadController {
 
         // Check for missing CTC numbers in 'contacts' and 'results' files
         else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
+          console.log("*** FILE: ***\n", uploadType);
+          console.log("*** ctcNumbers ***\n", JSON.stringify(existingCtcNumbers));
           rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
         }
 
