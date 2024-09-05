@@ -81,19 +81,19 @@ class UploadController {
       const csvStream = csvParser({ headers: true });
       let isFirstRow = true;
 
-      csvStream.on("data", (data) => {
-        console.log("Processing row: ", data); // Log each row
+      csvStream.on("data", (row) => {
+        console.log("Processing row: ", row); // Log each row
         let rejectionReason = "";
 
         // Check for duplicate CTC numbers in 'clients' files
-        if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
+        if (uploadType === "clients" && existingCtcNumbers.includes(row._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
         }
 
         // Check for matching CTC number in 'contacts', if none reject the record
         else if (uploadType === "contacts") {
-          const indexCtcNumberColumnValue = data._12;
-          const elicitationNumberColumnValue = data._13;
+          const indexCtcNumberColumnValue = row._12;
+          const elicitationNumberColumnValue = row._13;
           const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
 
           // Check for matching index CTC Number, if none reject the record
@@ -109,8 +109,8 @@ class UploadController {
 
         // Check if the file is 'results'
         else if (uploadType === "results") {
-          const indexCtcNumberColumnValue = data._12;
-          const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === data._13);
+          const indexCtcNumberColumnValue = row._12;
+          const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === row._13);
           // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
@@ -123,25 +123,25 @@ class UploadController {
 
         // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
-          data.rejectionReason = rejectionReason;
-          console.log("Rejected row data: ", data); // Add this line
-          rejectedRows.push(data);
+          row.rejectionReason = rejectionReason;
+          console.log("Rejected row data: ", row); // Add this line
+          rejectedRows.push(row);
           console.log("*** REJECTED ROWS ***", rejectedRows); // Check after push
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
-            data.providerId = "providerId";
-            data.team = "team";
-            data.teamId = "teamId";
-            data.locationId = "locationId";
+            row.providerId = "providerId";
+            row.team = "team";
+            row.teamId = "teamId";
+            row.locationId = "locationId";
             isFirstRow = false;
           } else {
-            data.providerId = req.decoded.data.providerId;
-            data.team = req.decoded.data.team;
-            data.teamId = req.decoded.data.teamId;
-            data.locationId = req.decoded.data.locationId;
+            row.providerId = req.decoded.data.providerId;
+            row.team = req.decoded.data.team;
+            row.teamId = req.decoded.data.teamId;
+            row.locationId = req.decoded.data.locationId;
           }
-          acceptedRows.push(data);
+          acceptedRows.push(row);
         }
       });
 
