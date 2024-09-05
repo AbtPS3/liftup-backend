@@ -12,13 +12,13 @@ import csvParser from "csv-parser";
 import pkg from "csv-writer";
 import streamifier from "streamifier";
 import dotenv from "dotenv";
-dotenv.config();
 import crypto from "crypto";
-import fs from "fs";
 
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import { uploadStats, getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
+
+dotenv.config();
 
 const { createObjectCsvWriter } = pkg;
 const currentModuleURL = new URL(import.meta.url);
@@ -89,33 +89,41 @@ class UploadController {
           rejectionReason = "Duplicate CTC number in clients file";
         }
 
-        // Check for missing CTC numbers in 'contacts' and 'results' files
-        else if (["contacts", "results"].includes(uploadType) && !existingCtcNumbers.includes(data._12)) {
-          console.log("*** FILE: ***\n", uploadType);
-          console.log("*** ctcNumbers ***\n", JSON.stringify(existingCtcNumbers));
-          rejectionReason = uploadType === "contacts" ? "No matching index client CTC number in contacts file" : "No matching index client CTC number in results file";
+        // Check for matching CTC number in 'contacts', if none reject the record
+        else if (uploadType === "contacts") {
+          const indexCtcNumberColumnValue = data._12;
+          const elicitationNumberColumnValue = data._13;
+          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in contacts file";
+          }
+
+          // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
+          if (elicitationExists) {
+            rejectionReason = "Duplicate elicitation number, already uploaded!";
+          }
         }
 
-        // Check for duplicate elicitation numbers in 'contacts' files
-        else if (uploadType === "contacts" && existingElicitationNumbers.includes(data._13)) {
-          rejectionReason = "Duplicate elicitation number in contacts file";
-        }
-
-        // Check for duplicate elicitation numbers and results in 'results' files
+        // Check if the file is 'results'
         else if (uploadType === "results") {
+          const indexCtcNumberColumnValue = data._12;
           const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === data._13);
-
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in results file";
+          }
+          // Check if elicitation number already has results. If it has, reject it
           if (elicitationData && elicitationData.has_results) {
-            // Elicitation number already has results, reject it
             rejectionReason = "Elicitation number has already been registered with results.";
           }
         }
 
-        // If a rejection reason is found, add the row to the rejectedRows array
+        // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
-          console.log("*** REJECTED ROW ***", data);
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
@@ -152,11 +160,6 @@ class UploadController {
               throw new Error(`Invalid upload type: ${uploadType}`);
           }
 
-          // Make sure the upload folders are where they are supposed to be
-          const directoryPath = join(__dirname, `../public/${uploadDirectory}`);
-          if (!fs.existsSync(directoryPath)) {
-            fs.mkdirSync(directoryPath, { recursive: true });
-          }
           const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
           const csvWriter = createObjectCsvWriter({
             path: filePath,
