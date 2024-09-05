@@ -82,6 +82,7 @@ class UploadController {
       let isFirstRow = true;
 
       csvStream.on("data", (data) => {
+        console.log("Processing row: ", data); // Log each row
         let rejectionReason = "";
 
         // Check for duplicate CTC numbers in 'clients' files
@@ -123,7 +124,9 @@ class UploadController {
         // If a rejection reason is found, add to rejectedRows array
         if (rejectionReason) {
           data.rejectionReason = rejectionReason;
+          console.log("Rejected row data: ", data); // Add this line
           rejectedRows.push(data);
+          console.log("*** REJECTED ROWS ***", rejectedRows); // Check after push
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
