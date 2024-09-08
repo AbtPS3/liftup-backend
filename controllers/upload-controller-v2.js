@@ -85,51 +85,49 @@ class UploadController {
         console.log("Processing row: ", data); // Log each row
         let rejectionReason = "";
 
-        if (!isFirstRow) {
-          // Check for duplicate CTC numbers in 'clients' files
-          if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
-            rejectionReason = "Duplicate CTC number in clients file";
+        // Check for duplicate CTC numbers in 'clients' files
+        if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
+          rejectionReason = "Duplicate CTC number in clients file";
+          data.rejectionReason = rejectionReason;
+          rejectedRows.push(data);
+        }
+
+        // Check for matching CTC number in 'contacts', if none reject the record
+        else if (uploadType === "contacts") {
+          const indexCtcNumberColumnValue = data._12;
+          const elicitationNumberColumnValue = data._13;
+          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
           }
 
-          // Check for matching CTC number in 'contacts', if none reject the record
-          else if (uploadType === "contacts") {
-            const indexCtcNumberColumnValue = data._12;
-            const elicitationNumberColumnValue = data._13;
-            const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
-
-            // Check for matching index CTC Number, if none reject the record
-            if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
-              rejectionReason = "No matching index client CTC number in contacts file";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
-
-            // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
-            if (elicitationExists) {
-              rejectionReason = "Duplicate elicitation number, already uploaded!";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
+          // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
+          if (elicitationExists) {
+            rejectionReason = "Duplicate elicitation number, already uploaded!";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
           }
+        }
 
-          // Check if the file is 'results'
-          else if (uploadType === "results") {
-            const indexCtcNumberColumnValue = data._12;
-            const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === data._13);
-            // Check for matching index CTC Number, if none reject the record
-            if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
-              rejectionReason = "No matching index client CTC number in results file";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
-            // Check if elicitation number already has results. If it has, reject it
-            if (elicitationData && elicitationData.has_results) {
-              rejectionReason = "Elicitation number has already been registered with results.";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
+        // Check if the file is 'results'
+        else if (uploadType === "results") {
+          const indexCtcNumberColumnValue = data._12;
+          const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === data._13);
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in results file";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+          }
+          // Check if elicitation number already has results. If it has, reject it
+          if (elicitationData && elicitationData.has_results) {
+            rejectionReason = "Elicitation number has already been registered with results.";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
           }
         }
 
