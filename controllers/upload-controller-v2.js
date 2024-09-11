@@ -89,7 +89,6 @@ class UploadController {
         if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
           data.rejectionReason = rejectionReason;
-          rejectedRows.push(data);
         }
 
         // Check for matching CTC number in 'contacts', if none reject the record
@@ -102,14 +101,12 @@ class UploadController {
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
           }
 
           // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
           }
         }
 
@@ -127,7 +124,6 @@ class UploadController {
           if (elicitationData && elicitationData.has_results) {
             rejectionReason = "Elicitation number has already been registered with results.";
             data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
           }
         }
 
