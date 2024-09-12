@@ -81,7 +81,6 @@ class UploadController {
           timeoutPromise(10000, "UCS checker services unavailable"),
         ]);
       } catch (error) {
-        console.error(error.message); // Handle the error appropriately
         throw new CustomError("UCS checker services unavailable.", 500);
       }
 
