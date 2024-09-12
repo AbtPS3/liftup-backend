@@ -89,6 +89,7 @@ class UploadController {
         if (uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
           data.rejectionReason = rejectionReason;
+          rejectedRows.push(data);
         }
 
         // Check for matching CTC number in 'contacts', if none reject the record
@@ -101,12 +102,16 @@ class UploadController {
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+            console.log("*** No matching index client CTC number in contacts file ***", rejectedRows);
           }
 
           // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+            console.log("*** Duplicate elicitation number, already uploaded! ***", rejectedRows);
           }
         }
 
@@ -119,20 +124,15 @@ class UploadController {
             rejectionReason = "No matching index client CTC number in results file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
+            console.log("*** No matching index client CTC number in results file ***", rejectedRows);
           }
           // Check if elicitation number already has results. If it has, reject it
           if (elicitationData && elicitationData.has_results) {
             rejectionReason = "Elicitation number has already been registered with results.";
             data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+            console.log("*** Elicitation number has already been registered with results. ***", rejectedRows);
           }
-        }
-
-        // If a rejection reason is found, add to rejectedRows array
-        if (rejectionReason) {
-          data.rejectionReason = rejectionReason;
-          console.log("Rejected row data: ", data); // Add this line
-          rejectedRows.push(data);
-          console.log("*** REJECTED ROWS ***", rejectedRows); // Check after push
         } else {
           // Processing for accepted rows
           if (isFirstRow) {
