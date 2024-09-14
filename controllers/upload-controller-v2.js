@@ -109,7 +109,6 @@ class UploadController {
         }
         // Check for 'contacts' uploadType and matching index CTC Number
         else if (!isFirstRow && uploadType === "contacts") {
-          console.log("CONTACT VALIDATION AREA ********");
           const indexCtcNumberColumnValue = data._12.trim();
 
           // Check for matching index CTC Number, if none reject the record
@@ -122,8 +121,7 @@ class UploadController {
 
           const elicitationNumberColumnValue = JSON.stringify(data._13);
           const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
-          console.log("ELICITATION EXISTS", elicitationExists);
-          console.log("ELICITATION NUMBER", elicitationNumberColumnValue);
+          console.log("ELICITATION", elicitationExists + ": " + elicitationNumberColumnValue);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
