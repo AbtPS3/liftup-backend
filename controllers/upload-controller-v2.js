@@ -98,6 +98,7 @@ class UploadController {
       const rejectedRows = [];
       const csvStream = csvParser({ headers: true });
       let isFirstRow = true;
+      let rejectionReason = "";
 
       csvStream.on("data", (data) => {
         // Check if ctcNumber is in existingCtcNumbers
