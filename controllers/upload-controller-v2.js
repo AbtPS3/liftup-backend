@@ -215,8 +215,7 @@ class UploadController {
 
           return response.api(req, res, 201, payload);
         } else {
-          // throw new CustomError("All rows were rejected.", 400);
-          return response.api(req, res, 201, payload);
+          throw new CustomError("All rows were rejected.", 400);
         }
       });
 
