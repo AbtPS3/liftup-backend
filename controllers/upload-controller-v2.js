@@ -101,15 +101,18 @@ class UploadController {
       let rejectionReason = "";
 
       csvStream.on("data", (data) => {
-        // Check if ctcNumber is in existingCtcNumbers
-        if (!isFirstRow && uploadType == "clients" && existingCtcNumbers.includes(data._0)) {
+        // Check if ctcNumber is in existingCtcNumbers for 'clients' uploadType
+        if (!isFirstRow && uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
           rejectionReason = "Duplicate CTC number in clients file";
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
-        } // Check for matching CTC number in 'contacts', if none reject the record
+        }
+        // Check for 'contacts' uploadType
         else if (!isFirstRow && uploadType === "contacts") {
-          const indexCtcNumberColumnValue = data._12;
-          const elicitationNumberColumnValue = data._13;
+          const indexCtcNumberColumnValue = data._12.trim(); // Ensure trimming
+          const elicitationNumberColumnValue = data._13.trim(); // Ensure trimming
+
+          // Check if the elicitation number exists
           const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
 
           // Check for matching index CTC Number, if none reject the record
@@ -117,16 +120,19 @@ class UploadController {
             rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
+            return; // Stop further processing for this row
           }
 
-          // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
+          // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
+            return; // Stop further processing for this row
           }
-        } else {
-          // Processing for accepted rows
+        }
+        // Processing for accepted rows
+        else {
           if (isFirstRow) {
             data.providerId = "providerId";
             data.team = "team";
