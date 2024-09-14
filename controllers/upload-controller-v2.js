@@ -107,7 +107,7 @@ class UploadController {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
         } // Check for matching CTC number in 'contacts', if none reject the record
-        else if (uploadType === "contacts") {
+        else if (!isFirstRow && uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12;
           const elicitationNumberColumnValue = data._13;
           const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
@@ -209,8 +209,8 @@ class UploadController {
 
           return response.api(req, res, 201, payload);
         } else {
-          throw new CustomError("All rows were rejected.", 400);
-          return;
+          // throw new CustomError("All rows were rejected.", 400);
+          return response.api(req, res, 201, payload);
         }
       });
 
