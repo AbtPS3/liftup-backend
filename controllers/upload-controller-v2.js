@@ -109,6 +109,7 @@ class UploadController {
         }
         // Check for 'contacts' uploadType and matching index CTC Number
         else if (!isFirstRow && uploadType === "contacts") {
+          console.log("CONTACT VALIDATION AREA ********");
           const indexCtcNumberColumnValue = data._12.trim(); // Ensure trimming
           const elicitationNumberColumnValue = data._13.trim(); // Ensure trimming
 
