@@ -107,7 +107,7 @@ class UploadController {
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
         }
-        // Check for 'contacts' uploadType
+        // Check for 'contacts' uploadType and matching index CTC Number
         else if (!isFirstRow && uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim(); // Ensure trimming
           const elicitationNumberColumnValue = data._13.trim(); // Ensure trimming
@@ -128,6 +128,7 @@ class UploadController {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
+            console.log("*** Rejected Row Duplicate Elicitation ***\n", data);
             return; // Stop further processing for this row
           }
         }
