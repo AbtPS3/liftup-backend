@@ -102,7 +102,9 @@ class UploadController {
       csvStream.on("data", (data) => {
         // Check if ctcNumber is in existingCtcNumbers
         if (!isFirstRow && uploadType == "clients" && existingCtcNumbers.includes(data._0)) {
-          rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
+          rejectionReason = "Duplicate CTC number in clients file";
+          data.rejectionReason = rejectionReason;
+          rejectedRows.push(data);
         } else if (!isFirstRow && (uploadType == "contacts" || uploadType == "results") && !existingCtcNumbers.includes(data._12)) {
           rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
           if (!existingCtcNumbers.includes(data._12)) {
