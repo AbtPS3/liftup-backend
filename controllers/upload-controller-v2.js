@@ -121,7 +121,7 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = data._13.trim();
-          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number == elicitationNumberColumnValue);
           console.log("ELICITATION EXISTS", elicitationExists);
           console.log("ELICITATION NUMBER", elicitationNumberColumnValue);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
