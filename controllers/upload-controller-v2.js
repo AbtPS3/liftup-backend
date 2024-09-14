@@ -120,17 +120,12 @@ class UploadController {
             return;
           }
 
-          const elicitationNumberColumnValue = data._13.trim();
-          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number == elicitationNumberColumnValue);
-          console.log("ELICITATION EXISTS", elicitationExists);
-          console.log("ELICITATION NUMBER", elicitationNumberColumnValue);
-          // Check if contact elicitation number is in existing elicitations, if YES reject it
-          if (elicitationExists) {
-            rejectionReason = "Duplicate elicitation number, already uploaded!";
+          // Directly check if elicitation number exists in the fetched dataset
+          if (existingElicitationNumbers.some((item) => item.elicitation_number.trim() === elicitationNumberColumnValue)) {
+            rejectionReason = "Duplicate elicitation number, already uploaded.";
+            console.log("DUPLICATE ELICITATION NUMBER");
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            console.log("*** Rejected Row Duplicate Elicitation ***\n", data);
-            return;
           }
         }
         // Processing for accepted rows
