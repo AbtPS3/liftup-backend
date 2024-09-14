@@ -110,27 +110,26 @@ class UploadController {
         // Check for 'contacts' uploadType and matching index CTC Number
         else if (!isFirstRow && uploadType === "contacts") {
           console.log("CONTACT VALIDATION AREA ********");
-          const indexCtcNumberColumnValue = data._12.trim(); // Ensure trimming
-          const elicitationNumberColumnValue = data._13.trim(); // Ensure trimming
-
-          // Check if the elicitation number exists
-          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+          const indexCtcNumberColumnValue = data._12.trim();
 
           // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            return; // Stop further processing for this row
+            return;
           }
 
+          const elicitationNumberColumnValue = data._13.trim();
+          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+          console.log("ELICITATION EXISTS", elicitationExists);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
             console.log("*** Rejected Row Duplicate Elicitation ***\n", data);
-            return; // Stop further processing for this row
+            return;
           }
         }
         // Processing for accepted rows
