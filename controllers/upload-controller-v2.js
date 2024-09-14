@@ -106,10 +106,24 @@ class UploadController {
           rejectionReason = "Duplicate CTC number in clients file";
           data.rejectionReason = rejectionReason;
           rejectedRows.push(data);
-        } else if (!isFirstRow && (uploadType == "contacts" || uploadType == "results") && !existingCtcNumbers.includes(data._12)) {
-          rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
-          if (!existingCtcNumbers.includes(data._12)) {
-            rejectedRows.push(data); // If ctc_number is in existingCtcNumbers, push it to rejectedRows
+        } // Check for matching CTC number in 'contacts', if none reject the record
+        else if (uploadType === "contacts") {
+          const indexCtcNumberColumnValue = data._12;
+          const elicitationNumberColumnValue = data._13;
+          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in contacts file";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+          }
+
+          // Check if contact elicitation number column calue is in exisiting elicitations, if YES reject it
+          if (elicitationExists) {
+            rejectionReason = "Duplicate elicitation number, already uploaded!";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
           }
         } else {
           // Processing for accepted rows
