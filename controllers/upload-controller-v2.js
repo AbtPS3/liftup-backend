@@ -108,7 +108,7 @@ class UploadController {
           rejectedRows.push(data);
         }
         // Check for 'contacts' uploadType and matching index CTC Number
-        else if (!isFirstRow && uploadType === "contacts") {
+        else if (uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim();
 
           // Check for matching index CTC Number, if none reject the record
