@@ -121,7 +121,7 @@ class UploadController {
           }
 
           // Directly check if elicitation number exists in the fetched dataset
-          if (existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue)) {
+          if (existingElicitationNumbers.some((item) => item.elicitation_number === data._13)) {
             rejectionReason = "Duplicate elicitation number, already uploaded.";
             console.log("DUPLICATE ELICITATION NUMBER");
             data.rejectionReason = rejectionReason;
