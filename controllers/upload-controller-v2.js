@@ -120,10 +120,11 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = data._13;
-          console.log("Comparing:", String(item.elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
-
           // const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
-          const elicitationExists = existingElicitationNumbers.some((item) => String(item.elicitation_number).trim() === String(elicitationNumberColumnValue).trim());
+          const elicitationExists = existingElicitationNumbers.some((item) => {
+            console.log("Comparing:", String(item.elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
+            return String(item.elicitation_number).trim() === String(elicitationNumberColumnValue).trim();
+          });
 
           console.log("ELICITATION", elicitationNumberColumnValue + ": " + elicitationExists);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
