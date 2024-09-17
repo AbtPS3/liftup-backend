@@ -149,7 +149,7 @@ class UploadController {
       });
 
       csvStream.on("end", async () => {
-        if (acceptedRows.length > 0) {
+        if (acceptedRows.length > -1) {
           let uploadDirectory;
 
           switch (uploadType) {
@@ -213,8 +213,6 @@ class UploadController {
           };
 
           return response.api(req, res, 201, payload);
-        } else {
-          throw new CustomError("All rows were rejected.", 400);
         }
       });
 
