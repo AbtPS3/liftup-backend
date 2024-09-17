@@ -119,7 +119,7 @@ class UploadController {
             return;
           }
 
-          const elicitationNumberColumnValue = JSON.stringify(data._13);
+          const elicitationNumberColumnValue = data._13;
           // const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
           const elicitationExists = existingElicitationNumbers.some((item) => String(item.elicitation_number) === String(elicitationNumberColumnValue));
 
