@@ -212,7 +212,7 @@ class UploadController {
           },
         };
 
-        return response.api(req, res, 201, payload);
+        return response.api(req, res, acceptedRows.length > 0 ? 201 : 200, payload);
       });
 
       fileStream.pipe(csvStream);
