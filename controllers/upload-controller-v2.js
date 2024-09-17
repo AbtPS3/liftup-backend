@@ -120,8 +120,10 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = JSON.stringify(data._13);
-          const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
-          console.log("ELICITATION", elicitationExists + ": " + elicitationNumberColumnValue);
+          // const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
+          const elicitationExists = existingElicitationNumbers.some((item) => String(item.elicitation_number) === String(elicitationNumberColumnValue));
+
+          console.log("ELICITATION", elicitationNumberColumnValue + ": " + elicitationExists);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
