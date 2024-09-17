@@ -124,7 +124,7 @@ class UploadController {
 
           // const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
           const elicitationExists = existingElicitationNumbers.some((item) => {
-            console.log("Comparing:", String(item.elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
+            // console.log("Comparing:", String(item.elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
             return String(item.elicitation_number).trim() === String(elicitationNumberColumnValue).trim();
           });
 
