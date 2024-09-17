@@ -141,7 +141,6 @@ class UploadController {
             rejectionReason = "Elicitation number has already been registered with results.";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            console.log("*** Elicitation number has already been registered with results. ***", data);
           }
         }
         // Processing for accepted rows
