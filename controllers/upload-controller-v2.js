@@ -120,14 +120,29 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = data._13;
-          const elicitationExists = existingElicitationNumbers.some((eclitication_number) => eclitication_number === elicitationNumberColumnValue);
+          const elicitationExists = existingElicitationNumbers.some((elitication_number) => elitication_number === elicitationNumberColumnValue);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            console.log("*** Rejected Row Duplicate Elicitation ***\n", data);
             return;
+          }
+        } else if (uploadType === "results") {
+          const indexCtcNumberColumnValue = data._12;
+          // Check for matching index CTC Number, if none reject the record
+          if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
+            rejectionReason = "No matching index client CTC number in results file";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+          }
+          const elicitationData = this.elicitationNumbersResponse.find((item) => item.elicitation_number === data._13);
+          // Check if elicitation number already has results. If it has, reject it
+          if (elicitationData && elicitationData.has_results) {
+            rejectionReason = "Elicitation number has already been registered with results.";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+            console.log("*** Elicitation number has already been registered with results. ***", data);
           }
         }
         // Processing for accepted rows
