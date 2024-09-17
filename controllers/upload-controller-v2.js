@@ -149,23 +149,23 @@ class UploadController {
       });
 
       csvStream.on("end", async () => {
-        if (acceptedRows.length > -1) {
-          let uploadDirectory;
+        let uploadDirectory;
 
-          switch (uploadType) {
-            case "clients":
-              uploadDirectory = "index_uploads";
-              break;
-            case "contacts":
-              uploadDirectory = "contacts_uploads";
-              break;
-            case "results":
-              uploadDirectory = "results_uploads";
-              break;
-            default:
-              throw new Error(`Invalid upload type: ${uploadType}`);
-          }
+        switch (uploadType) {
+          case "clients":
+            uploadDirectory = "index_uploads";
+            break;
+          case "contacts":
+            uploadDirectory = "contacts_uploads";
+            break;
+          case "results":
+            uploadDirectory = "results_uploads";
+            break;
+          default:
+            throw new Error(`Invalid upload type: ${uploadType}`);
+        }
 
+        if (acceptedRows.length > 0) {
           const filePath = join(__dirname, `../public/${uploadDirectory}`, originalFileName);
           const csvWriter = createObjectCsvWriter({
             path: filePath,
@@ -185,35 +185,34 @@ class UploadController {
           };
 
           await uploadStats(uploadStatsData);
-
           await csvWriter.writeRecords(acceptedRows);
-
-          const clientFiles = await getFileTypeCount(await req.decoded.data.providerId, "clients");
-          const contactFiles = await getFileTypeCount(await req.decoded.data.providerId, "contacts");
-          const resultFiles = await getFileTypeCount(await req.decoded.data.providerId, "results");
-          const acceptedRecords = await getTotalImportedRecords(await req.decoded.data.providerId);
-          const rejectedRecords = await getTotalRejectedRecords(await req.decoded.data.providerId);
-          const lastUploadDate = await getLastUploadDate(await req.decoded.data.providerId);
-
-          const rejected = rejectedRows.length > 0;
-          const payload = {
-            token: null,
-            authenticated: true,
-            message: "File uploaded, processed, and saved successfully!",
-            rejected: rejected,
-            rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
-            stats: {
-              clientFiles: clientFiles,
-              contactFiles: contactFiles,
-              resultFiles: resultFiles,
-              acceptedRecords: acceptedRecords,
-              rejectedRecords: rejectedRecords,
-              lastUploadDate: lastUploadDate,
-            },
-          };
-
-          return response.api(req, res, 201, payload);
         }
+
+        const clientFiles = await getFileTypeCount(req.decoded.data.providerId, "clients");
+        const contactFiles = await getFileTypeCount(req.decoded.data.providerId, "contacts");
+        const resultFiles = await getFileTypeCount(req.decoded.data.providerId, "results");
+        const acceptedRecords = await getTotalImportedRecords(req.decoded.data.providerId);
+        const rejectedRecords = await getTotalRejectedRecords(req.decoded.data.providerId);
+        const lastUploadDate = await getLastUploadDate(req.decoded.data.providerId);
+
+        const rejected = rejectedRows.length > 0;
+        const payload = {
+          token: null,
+          authenticated: true,
+          message: acceptedRows.length > 0 ? "File uploaded, processed, and saved successfully!" : "All rows were rejected.",
+          rejected: rejected,
+          rejectedRows: rejected ? rejectedRows.slice(1) : rejectedRows,
+          stats: {
+            clientFiles: clientFiles,
+            contactFiles: contactFiles,
+            resultFiles: resultFiles,
+            acceptedRecords: acceptedRows.length > 0 ? acceptedRecords : 0,
+            rejectedRecords: rejectedRecords,
+            lastUploadDate: lastUploadDate,
+          },
+        };
+
+        return response.api(req, res, acceptedRows.length > 0 ? 201 : 400, payload);
       });
 
       fileStream.pipe(csvStream);
