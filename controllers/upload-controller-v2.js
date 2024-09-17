@@ -73,8 +73,7 @@ class UploadController {
       const ctcNumbersEndpoint = process.env.CTC_NUMBERS_ENDPOINT;
       const elicitationNumbersEndpoint = process.env.ELICITATION_NUMBERS_ENDPOINT;
 
-      // const [ctcNumbersResponse, elicitationNumbersResponse] = await Promise.all([fetch(ctcNumbersEndpoint), fetch(elicitationNumbersEndpoint)]);
-
+      // Fetch responses with a timeout promise
       try {
         [this.ctcNumbersResponse, this.elicitationNumbersResponse] = await Promise.race([
           Promise.all([fetch(ctcNumbersEndpoint), fetch(elicitationNumbersEndpoint)]),
@@ -88,11 +87,11 @@ class UploadController {
         return new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
       }
 
-      if (!ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
-      if (!elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
+      if (!this.ctcNumbersResponse.ok) throw new Error("CTC Deduplicator checker unavailable. Retry later!");
+      if (!this.elicitationNumbersResponse.ok) throw new Error("Elicitation Deduplicator checker unavailable. Retry later!");
 
-      const existingCtcNumbers = (await ctcNumbersResponse.json()).map((item) => item.ctc_number);
-      const existingElicitationNumbers = (await elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
+      const existingCtcNumbers = (await this.ctcNumbersResponse.json()).map((item) => item.ctc_number);
+      const existingElicitationNumbers = (await this.elicitationNumbersResponse.json()).map((item) => item.elicitation_number);
 
       const acceptedRows = [];
       const rejectedRows = [];
@@ -120,7 +119,7 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = data._13;
-          const elicitationExists = existingElicitationNumbers.some((elitication_number) => elitication_number === elicitationNumberColumnValue);
+          const elicitationExists = existingElicitationNumbers.includes(elicitationNumberColumnValue);
           // Check if contact elicitation number is in existing elicitations, if YES reject it
           if (elicitationExists) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
@@ -136,9 +135,9 @@ class UploadController {
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
           }
-          const elicitationData = this.elicitationNumbersResponse.find((item) => item.elicitation_number === data._13);
+          const elicitationData = existingElicitationNumbers.find((item) => item === data._13);
           // Check if elicitation number already has results. If it has, reject it
-          if (elicitationData && elicitationData.has_results) {
+          if (elicitationData) {
             rejectionReason = "Elicitation number has already been registered with results.";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
