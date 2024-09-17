@@ -120,12 +120,10 @@ class UploadController {
           }
 
           const elicitationNumberColumnValue = data._13;
-          console.log("existingElicitationNumbers:", existingElicitationNumbers);
-
           // const elicitationExists = existingElicitationNumbers.some((item) => item.elicitation_number === elicitationNumberColumnValue);
-          const elicitationExists = existingElicitationNumbers.some((item) => {
-            // console.log("Comparing:", String(item.elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
-            return String(item.elicitation_number).trim() === String(elicitationNumberColumnValue).trim();
+          const elicitationExists = existingElicitationNumbers.some((elicitation_number) => {
+            console.log("Comparing:", String(elicitation_number).trim(), "with:", String(elicitationNumberColumnValue).trim());
+            return String(elicitation_number).trim() === String(elicitationNumberColumnValue).trim();
           });
 
           console.log("ELICITATION", elicitationNumberColumnValue + ": " + elicitationExists);
