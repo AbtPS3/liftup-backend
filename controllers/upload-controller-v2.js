@@ -100,18 +100,18 @@ class UploadController {
       let rejectionReason = "";
 
       csvStream.on("data", (data) => {
-        // Check if ctcNumber is in existingCtcNumbers for 'clients' uploadType
-        if (!isFirstRow && uploadType === "clients" && existingCtcNumbers.includes(data._0)) {
-          rejectionReason = "Duplicate CTC number in clients file";
-          data.rejectionReason = rejectionReason;
-          rejectedRows.push(data);
-        }
-
-        // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
-        if (!isFirstRow && uploadType === "clients") {
+        if (uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
+          // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
             rejectionReason = "Invalid CTC number";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
+          }
+
+          // Check if ctcNumber is in existingCtcNumbers for 'clients' uploadType
+          if (existingCtcNumbers.includes(data._0)) {
+            rejectionReason = "Duplicate CTC number in clients file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
           }
@@ -120,7 +120,6 @@ class UploadController {
         // Check for 'contacts' uploadType and matching index CTC Number
         else if (uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim();
-
           // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
@@ -129,14 +128,12 @@ class UploadController {
             return;
           }
 
+          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
-          if (!isFirstRow && uploadType === "clients") {
-            const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-            if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
-              rejectionReason = "Invalid CTC number";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
+          if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
+            rejectionReason = "Invalid CTC number";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
           }
 
           const elicitationNumberColumnValue = data._13;
@@ -157,18 +154,16 @@ class UploadController {
             rejectedRows.push(data);
           }
 
+          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
-          if (!isFirstRow && uploadType === "clients") {
-            const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-            if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
-              rejectionReason = "Invalid CTC number";
-              data.rejectionReason = rejectionReason;
-              rejectedRows.push(data);
-            }
+          if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
+            rejectionReason = "Invalid CTC number";
+            data.rejectionReason = rejectionReason;
+            rejectedRows.push(data);
           }
 
-          // Check if elicitation number already has results. If it has, reject it
           const elicitationData = existingElicitationNumbers.find((item) => item === data._13);
+          // Check if elicitation number already has results. If it has, reject it
           if (elicitationData) {
             rejectionReason = "Elicitation number has already been registered with results.";
             data.rejectionReason = rejectionReason;
