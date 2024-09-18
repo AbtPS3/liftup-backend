@@ -185,6 +185,7 @@ class UploadController {
             data.locationId = req.decoded.data.locationId;
           }
           acceptedRows.push(data);
+          console.log("*** ACEPTED ROW ***\n", data);
         }
       });
 
@@ -227,7 +228,7 @@ class UploadController {
           await uploadStats(uploadStatsData);
           console.log("*** UPLOAD STATS ***\n", uploadStatsData);
           await csvWriter.writeRecords(acceptedRows);
-          console.log("*** ACEPTED ROWS ***\n", acceptedRows);
+          console.log("*** ACCEPTED ROWS ***\n", acceptedRows);
         }
 
         const clientFiles = await getFileTypeCount(req.decoded.data.providerId, "clients");
