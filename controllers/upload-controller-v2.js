@@ -159,7 +159,7 @@ class UploadController {
           acceptedRows.push(data);
         } else {
           // For rejected rows, append the rejection reason in column 22 or beyond
-          data["22"] = rejectionReason;
+          data._22 = rejectionReason;
           rejectedRows.push(data);
         }
       });
