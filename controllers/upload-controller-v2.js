@@ -105,36 +105,39 @@ class UploadController {
         // Process based on the upload type
         if (!isFirstRow && uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-          if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
+          const indexCtcNumberColumnValue = data._0.trim();
+          if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
             isAccepted = false;
-          } else if (existingCtcNumbers.includes(data._0)) {
+          } else if (existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "Duplicate CTC number in clients file";
             isAccepted = false;
           }
         } else if (!isFirstRow && uploadType === "contacts") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           const indexCtcNumberColumnValue = data._12.trim();
+          const contactElicitationNumberColumnValue = data._13.trim();
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
             isAccepted = false;
           } else if (!ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
             isAccepted = false;
-          } else if (existingElicitationNumbers.includes(data._13)) {
+          } else if (existingElicitationNumbers.includes(contactElicitationNumberColumnValue)) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             isAccepted = false;
           }
         } else if (!isFirstRow && uploadType === "results") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           const indexCtcNumberColumnValue = data._12;
+          const contactElicitationNumberColumnValue = data._13;
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
             isAccepted = false;
           } else if (!ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
             isAccepted = false;
-          } else if (existingElicitationNumbers.includes(data._13)) {
+          } else if (existingElicitationNumbers.includes(contactElicitationNumberColumnValue)) {
             rejectionReason = "Elicitation number has already been registered with results.";
             isAccepted = false;
           }
