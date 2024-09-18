@@ -125,7 +125,6 @@ class UploadController {
             rejectionReason = "No matching index client CTC number in contacts file";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            return;
           }
 
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
@@ -143,7 +142,6 @@ class UploadController {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
-            return;
           }
         } else if (uploadType === "results") {
           const indexCtcNumberColumnValue = data._12;
