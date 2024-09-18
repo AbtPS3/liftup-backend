@@ -100,7 +100,7 @@ class UploadController {
       let rejectionReason = "";
 
       csvStream.on("data", (data) => {
-        if (!isFirstRow && uploadType === "clients") {
+        if (uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
@@ -118,7 +118,7 @@ class UploadController {
         }
 
         // Check for 'contacts' uploadType and matching index CTC Number
-        else if (!isFirstRow && uploadType === "contacts") {
+        else if (uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim();
           // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
@@ -145,7 +145,7 @@ class UploadController {
             rejectedRows.push(data);
             return;
           }
-        } else if (!isFirstRow && uploadType === "results") {
+        } else if (uploadType === "results") {
           const indexCtcNumberColumnValue = data._12;
           // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
