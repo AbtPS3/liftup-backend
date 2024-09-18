@@ -97,7 +97,6 @@ class UploadController {
       const rejectedRows = [];
       const csvStream = csvParser({ headers: true });
       let isFirstRow = true;
-      let rejectionReason = "";
 
       csvStream.on("data", (data) => {
         let isAccepted = true;
@@ -114,6 +113,7 @@ class UploadController {
             isAccepted = false;
           }
         } else if (!isFirstRow && uploadType === "contacts") {
+          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           const indexCtcNumberColumnValue = data._12.trim();
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
@@ -126,6 +126,7 @@ class UploadController {
             isAccepted = false;
           }
         } else if (!isFirstRow && uploadType === "results") {
+          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           const indexCtcNumberColumnValue = data._12;
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
