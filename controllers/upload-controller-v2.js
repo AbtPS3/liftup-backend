@@ -105,7 +105,7 @@ class UploadController {
           // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
             rejectionReason = "Invalid CTC number";
-            data.rejectionReason = rejectionReason;
+            data._11 = rejectionReason;
             rejectedRows.push(data);
           }
 
