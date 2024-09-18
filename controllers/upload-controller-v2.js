@@ -131,15 +131,22 @@ class UploadController {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           const indexCtcNumberColumnValue = data._12;
           const contactElicitationNumberColumnValue = data._13;
+
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
             isAccepted = false;
           } else if (!ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
             isAccepted = false;
-          } else if (existingElicitationNumbers.includes(contactElicitationNumberColumnValue)) {
-            rejectionReason = "Elicitation number has already been registered with results.";
-            isAccepted = false;
+          } else {
+            // Check if the elicitation_number has results
+            const elicitationData = existingElicitationNumbers.find((item) => item.elicitation_number === contactElicitationNumberColumnValue);
+
+            // Only reject if has_results is true for this elicitation_number
+            if (elicitationData && elicitationData.has_results) {
+              rejectionReason = "Elicitation number has already been registered with results.";
+              isAccepted = false;
+            }
           }
         }
 
