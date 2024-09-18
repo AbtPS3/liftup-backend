@@ -100,90 +100,66 @@ class UploadController {
       let rejectionReason = "";
 
       csvStream.on("data", (data) => {
+        let isAccepted = true;
+        let rejectionReason = "";
+
         if (uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-          // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
             rejectionReason = "Invalid CTC number";
-            data._11 = rejectionReason;
-            rejectedRows.push(data);
-          }
-
-          // Check if ctcNumber is in existingCtcNumbers for 'clients' uploadType
-          if (existingCtcNumbers.includes(data._0)) {
+            isAccepted = false;
+          } else if (existingCtcNumbers.includes(data._0)) {
             rejectionReason = "Duplicate CTC number in clients file";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
+            isAccepted = false;
           }
-        }
-
-        // Check for 'contacts' uploadType and matching index CTC Number
-        else if (uploadType === "contacts") {
+        } else if (uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim();
-          // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
-          }
-
-          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-          // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
-          if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
+            isAccepted = false;
+          } else if (!ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
-          }
-
-          const elicitationNumberColumnValue = data._13;
-          const elicitationExists = existingElicitationNumbers.includes(elicitationNumberColumnValue);
-          // Check if contact elicitation number is in existing elicitations, if YES reject it
-          if (elicitationExists) {
+            isAccepted = false;
+          } else if (existingElicitationNumbers.includes(data._13)) {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
+            isAccepted = false;
           }
         } else if (uploadType === "results") {
           const indexCtcNumberColumnValue = data._12;
-          // Check for matching index CTC Number, if none reject the record
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
-          }
-
-          const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
-          // Check if CTC number exists and if it follows the valid format for the 'clients' upload type
-          if (!indexCtcNumberColumnValue || !ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
+            isAccepted = false;
+          } else if (!ctcNumberFormatRegex.test(indexCtcNumberColumnValue)) {
             rejectionReason = "Invalid CTC number";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
-          }
-
-          const elicitationData = existingElicitationNumbers.find((item) => item === data._13);
-          // Check if elicitation number already has results. If it has, reject it
-          if (elicitationData) {
+            isAccepted = false;
+          } else if (existingElicitationNumbers.includes(data._13)) {
             rejectionReason = "Elicitation number has already been registered with results.";
-            data.rejectionReason = rejectionReason;
-            rejectedRows.push(data);
+            isAccepted = false;
           }
-        } else {
-          // Add facility and user details
+        }
+
+        if (isAccepted) {
+          // For accepted rows, add facility and user details
           if (isFirstRow) {
+            // Add headings
             data.providerId = "providerId";
             data.team = "team";
             data.teamId = "teamId";
             data.locationId = "locationId";
             isFirstRow = false;
           } else {
+            // Add user details for non-first rows
             data.providerId = req.decoded.data.providerId;
             data.team = req.decoded.data.team;
             data.teamId = req.decoded.data.teamId;
             data.locationId = req.decoded.data.locationId;
           }
+          acceptedRows.push(data);
+        } else {
+          // For rejected rows, add the rejection reason in column 22 or beyond
+          data["22"] = rejectionReason;
+          rejectedRows.push(data);
         }
-        // Processing for accepted rows
-        acceptedRows.push(data);
       });
 
       csvStream.on("end", async () => {
