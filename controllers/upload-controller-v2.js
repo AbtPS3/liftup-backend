@@ -104,7 +104,7 @@ class UploadController {
         let rejectionReason = "";
 
         // Process based on the upload type
-        if (uploadType === "clients") {
+        if (!isFirstRow && uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
             rejectionReason = "Invalid CTC number";
@@ -113,7 +113,7 @@ class UploadController {
             rejectionReason = "Duplicate CTC number in clients file";
             isAccepted = false;
           }
-        } else if (uploadType === "contacts") {
+        } else if (!isFirstRow && uploadType === "contacts") {
           const indexCtcNumberColumnValue = data._12.trim();
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in contacts file";
@@ -125,7 +125,7 @@ class UploadController {
             rejectionReason = "Duplicate elicitation number, already uploaded!";
             isAccepted = false;
           }
-        } else if (uploadType === "results") {
+        } else if (!isFirstRow && uploadType === "results") {
           const indexCtcNumberColumnValue = data._12;
           if (!existingCtcNumbers.includes(indexCtcNumberColumnValue)) {
             rejectionReason = "No matching index client CTC number in results file";
