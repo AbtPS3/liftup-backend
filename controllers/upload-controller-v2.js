@@ -213,6 +213,7 @@ class UploadController {
 
           await uploadStats(uploadStatsData);
           await csvWriter.writeRecords(acceptedRows);
+          console.log("*** ACCEPTED ROWS ***", acceptedRows);
         }
 
         const clientFiles = await getFileTypeCount(req.decoded.data.providerId, "clients");
