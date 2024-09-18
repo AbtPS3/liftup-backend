@@ -169,22 +169,19 @@ class UploadController {
           }
         }
         // Processing for accepted rows
-        else {
-          if (isFirstRow) {
-            data.providerId = "providerId";
-            data.team = "team";
-            data.teamId = "teamId";
-            data.locationId = "locationId";
-            isFirstRow = false;
-          } else {
-            data.providerId = req.decoded.data.providerId;
-            data.team = req.decoded.data.team;
-            data.teamId = req.decoded.data.teamId;
-            data.locationId = req.decoded.data.locationId;
-          }
-          acceptedRows.push(data);
-          console.log("*** ACEPTED ROW ***\n", data);
+        if (isFirstRow) {
+          data.providerId = "providerId";
+          data.team = "team";
+          data.teamId = "teamId";
+          data.locationId = "locationId";
+          isFirstRow = false;
+        } else {
+          data.providerId = req.decoded.data.providerId;
+          data.team = req.decoded.data.team;
+          data.teamId = req.decoded.data.teamId;
+          data.locationId = req.decoded.data.locationId;
         }
+        acceptedRows.push(data);
       });
 
       csvStream.on("end", async () => {
