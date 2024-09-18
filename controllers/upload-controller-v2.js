@@ -77,7 +77,7 @@ class UploadController {
       try {
         [this.ctcNumbersResponse, this.elicitationNumbersResponse] = await Promise.race([
           Promise.all([fetch(ctcNumbersEndpoint), fetch(elicitationNumbersEndpoint)]),
-          timeoutPromise(10000, "UCS checker services unavailable"),
+          timeoutPromise(60000, "UCS checker services unavailable"),
         ]);
       } catch (error) {
         throw new CustomError("UCS checker services unavailable.", 500);
