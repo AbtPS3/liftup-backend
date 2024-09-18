@@ -103,6 +103,7 @@ class UploadController {
         let isAccepted = true;
         let rejectionReason = "";
 
+        // Process based on the upload type
         if (uploadType === "clients") {
           const ctcNumberFormatRegex = /^\d{2}-\d{2}-\d{4}-\d{6}$/;
           if (!data._0 || !ctcNumberFormatRegex.test(data._0)) {
@@ -138,10 +139,11 @@ class UploadController {
           }
         }
 
+        // If the row is accepted, process it accordingly
         if (isAccepted) {
-          // For accepted rows, add facility and user details
+          // For accepted rows, add headings to the first row, and user details to subsequent rows
           if (isFirstRow) {
-            // Add headings
+            // Add headings (to first accepted row)
             data.providerId = "providerId";
             data.team = "team";
             data.teamId = "teamId";
@@ -156,7 +158,7 @@ class UploadController {
           }
           acceptedRows.push(data);
         } else {
-          // For rejected rows, add the rejection reason in column 22 or beyond
+          // For rejected rows, append the rejection reason in column 22 or beyond
           data["22"] = rejectionReason;
           rejectedRows.push(data);
         }
