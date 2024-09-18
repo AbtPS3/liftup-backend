@@ -167,23 +167,23 @@ class UploadController {
             data.rejectionReason = rejectionReason;
             rejectedRows.push(data);
           }
+        } else {
+          // Add facility and user details
+          if (isFirstRow) {
+            data.providerId = "providerId";
+            data.team = "team";
+            data.teamId = "teamId";
+            data.locationId = "locationId";
+            isFirstRow = false;
+          } else {
+            data.providerId = req.decoded.data.providerId;
+            data.team = req.decoded.data.team;
+            data.teamId = req.decoded.data.teamId;
+            data.locationId = req.decoded.data.locationId;
+          }
         }
         // Processing for accepted rows
         acceptedRows.push(data);
-
-        // Add facility and user details
-        if (isFirstRow) {
-          data.providerId = "providerId";
-          data.team = "team";
-          data.teamId = "teamId";
-          data.locationId = "locationId";
-          isFirstRow = false;
-        } else {
-          data.providerId = req.decoded.data.providerId;
-          data.team = req.decoded.data.team;
-          data.teamId = req.decoded.data.teamId;
-          data.locationId = req.decoded.data.locationId;
-        }
       });
 
       csvStream.on("end", async () => {
