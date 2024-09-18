@@ -169,6 +169,9 @@ class UploadController {
           }
         }
         // Processing for accepted rows
+        acceptedRows.push(data);
+
+        // Add facility and user details
         if (isFirstRow) {
           data.providerId = "providerId";
           data.team = "team";
@@ -181,7 +184,6 @@ class UploadController {
           data.teamId = req.decoded.data.teamId;
           data.locationId = req.decoded.data.locationId;
         }
-        acceptedRows.push(data);
       });
 
       csvStream.on("end", async () => {
