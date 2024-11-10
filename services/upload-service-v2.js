@@ -137,7 +137,8 @@ export async function getTotalAcceptedRecords(region) {
           is: {
             locations: {
               is: {
-                region_name: region,
+                // region_name: region,
+                region_name: "Dar es Salaam Region",
               },
             },
           },
