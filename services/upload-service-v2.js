@@ -156,7 +156,7 @@ export async function getTotalAcceptedRecords(region) {
 // Get all rejected rows per region
 export async function getTotalRejectedRecords(region) {
   try {
-    const totalFileTypeCount = await prisma.uploads.aggregate({
+    const totalRejectedRecords = await prisma.uploads.aggregate({
       _sum: {
         rejected_rows: true,
       },
