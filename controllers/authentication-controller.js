@@ -16,16 +16,7 @@ import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
 import AuthenticationService from "../services/authentication-service.js";
-import {
-  getFileTypeCount,
-  getImportedRecords,
-  getRejectedRecords,
-  getLastUploadDate,
-  getTotalFileTypeCount,
-  getTotalAcceptedRecords,
-  getTotalRejectedRecords,
-  getTotalRegionFiles,
-} from "../services/upload-service-v2.js";
+import { getFileTypeCount, getImportedRecords, getRejectedRecords, getLastUploadDate, getTotalFileTypeCount, getTotalAcceptedRecords, getTotalRejectedRecords } from "../services/upload-service-v2.js";
 
 /**
  * Controller class for handling user authentication.

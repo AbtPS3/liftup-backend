@@ -16,7 +16,7 @@ import crypto from "crypto";
 
 import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
-import { uploadStats, getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
+import { uploadStats, getFileTypeCount, getImportedRecords, getRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
 
 dotenv.config();
 
@@ -213,14 +213,14 @@ class UploadController {
 
           await uploadStats(uploadStatsData);
           await csvWriter.writeRecords(acceptedRows);
-          console.log("*** ACCEPTED ROWS ***", acceptedRows);
+          // console.log("*** ACCEPTED ROWS ***", acceptedRows);
         }
 
         const clientFiles = await getFileTypeCount(req.decoded.data.providerId, "clients");
         const contactFiles = await getFileTypeCount(req.decoded.data.providerId, "contacts");
         const resultFiles = await getFileTypeCount(req.decoded.data.providerId, "results");
-        const acceptedRecords = await getTotalImportedRecords(req.decoded.data.providerId);
-        const rejectedRecords = await getTotalRejectedRecords(req.decoded.data.providerId);
+        const acceptedRecords = await getImportedRecords(req.decoded.data.providerId);
+        const rejectedRecords = await getRejectedRecords(req.decoded.data.providerId);
         const lastUploadDate = await getLastUploadDate(req.decoded.data.providerId);
 
         const rejected = rejectedRows.length > 0;
