@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["tepi_export", "tepi_stats"]
+  schemas  = ["public", "tepi_export", "tepi_stats"]
 }
 
 model elicitation {
@@ -135,6 +135,19 @@ model uploads {
   upload_date         DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("tepi_stats")
+}
+
+model TeamMembers {
+  uuid          String  @db.VarChar // maps to character varying
+  identifier    String? @db.VarChar // nullable column
+  name          String? @db.VarChar // nullable column
+  location_uuid String  @db.VarChar // maps to character varying
+  location_name String? @db.VarChar // nullable column
+  team_name     String? @db.VarChar // nullable column
+
+  @@id([uuid, location_uuid]) // composite primary key
+  @@map("team_members") // maps to "team_members" table
+  @@schema("public") // maps to "public" schema
 }
 
 // MATERIALIZED VIEWS DO NOT RESPAWN ON prisma db pull, COPY THEM FIRST

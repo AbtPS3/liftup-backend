@@ -16,7 +16,16 @@ import CustomError from "../helpers/custom-error.js";
 import response from "../helpers/response-handler.js";
 import AuthenticateJwt from "../middlewares/authenticate-jwt.js";
 import AuthenticationService from "../services/authentication-service.js";
-import { getFileTypeCount, getTotalImportedRecords, getTotalRejectedRecords, getLastUploadDate } from "../services/upload-service-v2.js";
+import {
+  getFileTypeCount,
+  getImportedRecords,
+  getRejectedRecords,
+  getLastUploadDate,
+  getTotalFileTypeCount,
+  getTotalAcceptedRecords,
+  getTotalRejectedRecords,
+  getTotalRegionFiles,
+} from "../services/upload-service-v2.js";
 
 /**
  * Controller class for handling user authentication.
@@ -52,9 +61,47 @@ class AuthenticationController {
       // Check if both username and password are provided
       if (!username || !password) {
         throw new CustomError("Username or Password is missing!", 400);
-      } else if (username == "tepifad") {
-        // Changed to tepifad from envUsername
-        // Get upload stats to be sent to the user
+      } else if (username == "tepifac") {
+        // Change to 'tepifad' to disable this behaviour
+        // Check if password is sawasawa
+        if (password !== envPassword) {
+          throw new CustomError("Invalid password!", 401);
+        }
+
+        // Generate TEPIFAC specific dashboards
+        const totalClientFilesDodoma = await getTotalFileTypeCount("clients", "Dodoma_Region");
+        const totalClientFilesMbeya = await getTotalFileTypeCount("clients", "Mbeya_Region");
+        const totalClientFilesMwanza = await getTotalFileTypeCount("clients", "Mwanza_Region");
+        const totalContactFilesDodoma = await getTotalFileTypeCount("contacts", "Dodoma_Region");
+        const totalContactFilesMbeya = await getTotalFileTypeCount("contacts", "Mbeya_Region");
+        const totalContactFilesMwanza = await getTotalFileTypeCount("contacts", "Mwanza_Region");
+        const totalResultFilesDodoma = await getTotalFileTypeCount("results", "Dodoma_Region");
+        const totalResultFilesMbeya = await getTotalFileTypeCount("results", "Mbeya_Region");
+        const totalResultFilesMwanza = await getTotalFileTypeCount("results", "Mwanza_Region");
+        const totalAcceptedRecordsDodoma = await getTotalAcceptedRecords("Dodoma_Region");
+        const totalAcceptedRecordsMbeya = await getTotalAcceptedRecords("Mbeya_Region");
+        const totalAcceptedRecordsMwanza = await getTotalAcceptedRecords("Mwanza_Region");
+        const totalRejectedRecordsDodoma = await getTotalRejectedRecords("Dodoma_Region");
+        const totalRejectedRecordsMbeya = await getTotalRejectedRecords("Mbeya_Region");
+        const totalRejectedRecordsMwanza = await getTotalRejectedRecords("Mwanza_Region");
+
+        const adminUploadStats = {
+          totalClientFilesDodoma: totalClientFilesDodoma,
+          totalClientFilesMbeya: totalClientFilesMbeya,
+          totalClientFilesMwanza: totalClientFilesMwanza,
+          totalContactFilesDodoma: totalContactFilesDodoma,
+          totalContactFilesMbeya: totalContactFilesMbeya,
+          totalContactFilesMwanza: totalContactFilesMwanza,
+          totalResultFilesDodoma: totalResultFilesDodoma,
+          totalResultFilesMbeya: totalResultFilesMbeya,
+          totalResultFilesMwanza: totalResultFilesMwanza,
+          totalAcceptedRecordsDodoma: totalAcceptedRecordsDodoma,
+          totalAcceptedRecordsMbeya: totalAcceptedRecordsMbeya,
+          totalAcceptedRecordsMwanza: totalAcceptedRecordsMwanza,
+          totalRejectedRecordsDodoma: totalRejectedRecordsDodoma,
+          totalRejectedRecordsMbeya: totalRejectedRecordsMbeya,
+          totalRejectedRecordsMwanza: totalRejectedRecordsMwanza,
+        };
 
         // Generate a JWT token using user information from the authentication response
         const token = jwt.sign(
@@ -77,6 +124,7 @@ class AuthenticationController {
           token: token,
           authenticated: true,
           message: "Dev login successful",
+          adminUploadStats: adminUploadStats,
         };
 
         return response.api(req, res, 200, payload);
@@ -110,8 +158,8 @@ class AuthenticationController {
         const clientFiles = await getFileTypeCount(username, "clients");
         const contactFiles = await getFileTypeCount(username, "contacts");
         const resultFiles = await getFileTypeCount(username, "results");
-        const acceptedRecords = await getTotalImportedRecords(username);
-        const rejectedRecords = await getTotalRejectedRecords(username);
+        const acceptedRecords = await getImportedRecords(username);
+        const rejectedRecords = await getRejectedRecords(username);
         const lastUploadDate = await getLastUploadDate(username);
 
         // Generate a JWT token using user information from the authentication response

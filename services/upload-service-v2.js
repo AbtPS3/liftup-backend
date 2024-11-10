@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Save upload stats in uploads table
 export async function uploadStats(stats) {
   try {
     const saveStats = await prisma.uploads.create({
@@ -17,6 +18,7 @@ export async function uploadStats(stats) {
   }
 }
 
+// Get the number of file upload attempts per user and filetype
 export async function getFileTypeCount(username, fileType) {
   try {
     const fileTypeCount = await prisma.uploads.count({
@@ -34,7 +36,8 @@ export async function getFileTypeCount(username, fileType) {
   }
 }
 
-export async function getTotalImportedRecords(username) {
+// Get the number of imported records per specific user
+export async function getImportedRecords(username) {
   try {
     const sumImportedRows = await prisma.uploads.aggregate({
       where: {
@@ -53,7 +56,8 @@ export async function getTotalImportedRecords(username) {
   }
 }
 
-export async function getTotalRejectedRecords(username) {
+// Get number of rejected records per specific user
+export async function getRejectedRecords(username) {
   try {
     const sumRejectedRows = await prisma.uploads.aggregate({
       where: {
@@ -72,6 +76,7 @@ export async function getTotalRejectedRecords(username) {
   }
 }
 
+// Get last uploading date for a specific user
 export async function getLastUploadDate(username) {
   try {
     const lastUploadDate = await prisma.uploads.findFirst({
@@ -88,6 +93,76 @@ export async function getLastUploadDate(username) {
     return lastUploadDate?.upload_date || null;
   } catch (error) {
     console.error("Error fetching last upload date:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+// Get total file count per filetype and region
+export async function getTotalFileTypeCount(fileType, region) {
+  try {
+    const totalFileTypeCount = await prisma.uploads.count({
+      where: {
+        uploaded_file_type: fileType,
+        team_member: {
+          location: {
+            region_name: region,
+          },
+        },
+      },
+    });
+    return totalFileTypeCount;
+  } catch (error) {
+    console.error("Error fetching file type count:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+// Get all accepted 'imported' rows per region
+export async function getTotalAcceptedRecords(region) {
+  try {
+    const totalFileTypeCount = await prisma.uploads.aggregate({
+      _sum: {
+        imported_rows: true,
+      },
+      where: {
+        team_member: {
+          location: {
+            region_name: region,
+          },
+        },
+      },
+    });
+    return totalFileTypeCount;
+  } catch (error) {
+    console.error("Error fetching file type count:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+// Get all rejected rows per region
+export async function getTotalAcceptedRecords(region) {
+  try {
+    const totalFileTypeCount = await prisma.uploads.aggregate({
+      _sum: {
+        rejected_rows: true,
+      },
+      where: {
+        team_member: {
+          location: {
+            region_name: region,
+          },
+        },
+      },
+    });
+    return totalFileTypeCount;
+  } catch (error) {
+    console.error("Error fetching file type count:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
