@@ -162,12 +162,8 @@ export async function getTotalRejectedRecords(region) {
       },
       where: {
         team_member: {
-          is: {
-            locations: {
-              is: {
-                region_name: region, // Filter by region name in `location`
-              },
-            },
+          locations: {
+            region_name: region,
           },
         },
       },
