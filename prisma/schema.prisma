@@ -127,23 +127,27 @@ model OutcomesMV {
 model uploads {
   id                  String   @id(map: "id") @db.Uuid
   user_base_entity_id String   @db.VarChar(200)
-  username            String   @db.VarChar(50)
+  username            String   @unique @db.VarChar(50)
   uploaded_file       String   @db.VarChar(200)
   uploaded_file_type  String   @db.VarChar(50)
   imported_rows       Int      @default(0)
   rejected_rows       Int      @default(0)
   upload_date         DateTime @default(now()) @db.Timestamptz(6)
 
+  // Define the relation to TeamMembers
+  team_member TeamMembers? @relation(fields: [username], references: [identifier])
+
   @@schema("tepi_stats")
 }
 
 model TeamMembers {
-  uuid          String  @db.VarChar // maps to character varying
-  identifier    String? @db.VarChar // nullable column
-  name          String? @db.VarChar // nullable column
-  location_uuid String  @db.VarChar // maps to character varying
-  location_name String? @db.VarChar // nullable column
-  team_name     String? @db.VarChar // nullable column
+  uuid          String   @db.VarChar // maps to character varying
+  identifier    String   @unique @db.VarChar
+  name          String?  @db.VarChar // nullable column
+  location_uuid String   @db.VarChar // maps to character varying
+  location_name String?  @db.VarChar // nullable column
+  team_name     String?  @db.VarChar // nullable column
+  uploads       uploads?
 
   @@id([uuid, location_uuid]) // composite primary key
   @@map("team_members") // maps to "team_members" table
