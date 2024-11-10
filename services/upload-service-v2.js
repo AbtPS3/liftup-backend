@@ -128,7 +128,7 @@ export async function getTotalFileTypeCount(fileType, region) {
 // Get all accepted 'imported' rows per region
 export async function getTotalAcceptedRecords(region) {
   try {
-    const totalFileTypeCount = await prisma.uploads.aggregate({
+    const totalAcceptedRecords = await prisma.uploads.aggregate({
       _sum: {
         imported_rows: true,
       },
@@ -137,14 +137,14 @@ export async function getTotalAcceptedRecords(region) {
           is: {
             locations: {
               is: {
-                region_name: region, // Filter by region name in `location`
+                region_name: region,
               },
             },
           },
         },
       },
     });
-    return totalFileTypeCount;
+    return totalAcceptedRecords._sum.imported_rows || 0;
   } catch (error) {
     console.error("Error fetching file type count:", error);
     throw error;
@@ -162,13 +162,17 @@ export async function getTotalRejectedRecords(region) {
       },
       where: {
         team_member: {
-          locations: {
-            region_name: region,
+          is: {
+            locations: {
+              is: {
+                region_name: region,
+              },
+            },
           },
         },
       },
     });
-    return totalFileTypeCount;
+    return totalRejectedRecords._sum.rejected_rows || 0;
   } catch (error) {
     console.error("Error fetching file type count:", error);
     throw error;
