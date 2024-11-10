@@ -75,6 +75,7 @@ model locations {
   region_name   String?        @db.VarChar
   test_outcome  test_outcome[]
   elicitation   elicitation[]
+  TeamMembers   TeamMembers[]
 
   @@schema("tepi_export")
 }
@@ -141,12 +142,13 @@ model uploads {
 }
 
 model TeamMembers {
-  uuid          String   @db.VarChar // maps to character varying
-  identifier    String   @unique @db.VarChar
-  name          String?  @db.VarChar // nullable column
-  location_uuid String   @db.VarChar // maps to character varying
-  location_name String?  @db.VarChar // nullable column
-  team_name     String?  @db.VarChar // nullable column
+  uuid          String     @db.VarChar // maps to character varying
+  identifier    String     @unique @db.VarChar
+  name          String?    @db.VarChar // nullable column
+  location_uuid String     @db.VarChar // maps to character varying
+  location_name String?    @db.VarChar // nullable column
+  team_name     String?    @db.VarChar // nullable column
+  locations     locations? @relation(fields: [location_uuid], references: [location_uuid])
   uploads       uploads?
 
   @@id([uuid, location_uuid]) // composite primary key
