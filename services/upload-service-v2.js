@@ -107,7 +107,7 @@ export async function getTotalFileTypeCount(fileType, region) {
         uploaded_file_type: fileType,
         team_member: {
           is: {
-            location: {
+            locations: {
               is: {
                 region_name: region,
               },
@@ -135,7 +135,7 @@ export async function getTotalAcceptedRecords(region) {
       where: {
         team_member: {
           is: {
-            location: {
+            locations: {
               is: {
                 region_name: region, // Filter by region name in `location`
               },
@@ -163,7 +163,7 @@ export async function getTotalRejectedRecords(region) {
       where: {
         team_member: {
           is: {
-            location: {
+            locations: {
               is: {
                 region_name: region, // Filter by region name in `location`
               },
