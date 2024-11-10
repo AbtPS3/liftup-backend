@@ -175,7 +175,7 @@ export async function getTotalRejectedRecords(region) {
     return totalRejectedRecords._sum.rejected_rows || 0;
   } catch (error) {
     console.error("Error fetching file type count:", error);
-    throw error;
+g    throw error;
   } finally {
     await prisma.$disconnect();
   }

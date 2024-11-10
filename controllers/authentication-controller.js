@@ -60,21 +60,21 @@ class AuthenticationController {
         }
 
         // Generate TEPIFAC specific dashboards
-        const totalClientFilesDodoma = await getTotalFileTypeCount("clients", "Dodoma_Region");
-        const totalClientFilesMbeya = await getTotalFileTypeCount("clients", "Mbeya_Region");
-        const totalClientFilesMwanza = await getTotalFileTypeCount("clients", "Mwanza_Region");
-        const totalContactFilesDodoma = await getTotalFileTypeCount("contacts", "Dodoma_Region");
-        const totalContactFilesMbeya = await getTotalFileTypeCount("contacts", "Mbeya_Region");
-        const totalContactFilesMwanza = await getTotalFileTypeCount("contacts", "Mwanza_Region");
-        const totalResultFilesDodoma = await getTotalFileTypeCount("results", "Dodoma_Region");
-        const totalResultFilesMbeya = await getTotalFileTypeCount("results", "Mbeya_Region");
-        const totalResultFilesMwanza = await getTotalFileTypeCount("results", "Mwanza_Region");
-        const totalAcceptedRecordsDodoma = await getTotalAcceptedRecords("Dodoma_Region");
-        const totalAcceptedRecordsMbeya = await getTotalAcceptedRecords("Mbeya_Region");
-        const totalAcceptedRecordsMwanza = await getTotalAcceptedRecords("Mwanza_Region");
-        const totalRejectedRecordsDodoma = await getTotalRejectedRecords("Dodoma_Region");
-        const totalRejectedRecordsMbeya = await getTotalRejectedRecords("Mbeya_Region");
-        const totalRejectedRecordsMwanza = await getTotalRejectedRecords("Mwanza_Region");
+        const totalClientFilesDodoma = await getTotalFileTypeCount("clients", "Dodoma Region");
+        const totalClientFilesMbeya = await getTotalFileTypeCount("clients", "Mbeya Region");
+        const totalClientFilesMwanza = await getTotalFileTypeCount("clients", "Mwanza Region");
+        const totalContactFilesDodoma = await getTotalFileTypeCount("contacts", "Dodoma Region");
+        const totalContactFilesMbeya = await getTotalFileTypeCount("contacts", "Mbeya Region");
+        const totalContactFilesMwanza = await getTotalFileTypeCount("contacts", "Mwanza Region");
+        const totalResultFilesDodoma = await getTotalFileTypeCount("results", "Dodoma Region");
+        const totalResultFilesMbeya = await getTotalFileTypeCount("results", "Mbeya Region");
+        const totalResultFilesMwanza = await getTotalFileTypeCount("results", "Mwanza Region");
+        const totalAcceptedRecordsDodoma = await getTotalAcceptedRecords("Dodoma Region");
+        const totalAcceptedRecordsMbeya = await getTotalAcceptedRecords("Mbeya Region");
+        const totalAcceptedRecordsMwanza = await getTotalAcceptedRecords("Mwanza Region");
+        const totalRejectedRecordsDodoma = await getTotalRejectedRecords("Dodoma Region");
+        const totalRejectedRecordsMbeya = await getTotalRejectedRecords("Mbeya Region");
+        const totalRejectedRecordsMwanza = await getTotalRejectedRecords("Mwanza Region");
 
         const adminUploadStats = {
           totalClientFilesDodoma: totalClientFilesDodoma,
